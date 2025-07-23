@@ -1,0 +1,10 @@
+.vscode/
+.github/
+build/
+
+#CMake files
+*.cmake
+CMakeCache.txt
+Testing/
+CMakeFiles/
+Makefile

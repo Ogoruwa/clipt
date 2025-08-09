@@ -23,9 +23,9 @@ endif()
 include(CTest)
 
 if(BUILD_TESTING)
-    # add_subdirectory("tests")
+    add_subdirectory("tests")
 endif()
 
 
 # Packaging
-# add_subdirectory("package")
+add_subdirectory("package")

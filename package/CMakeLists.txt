@@ -1,0 +1,50 @@
+option(PACKAGE_SETUPS "Package installers" OFF)
+option(PACKAGE_DISTROS "Package rpm and deb" ON)
+
+
+include(InstallRequiredSystemLibraries)
+
+
+# Debian
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+
+
+# Details
+set(CPACK_PACKAGE_VENDOR "OSS")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_CONTACT "https://github.com/Ogoruwa/clipt")
+
+
+# Files
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE.md")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/README.md")
+
+
+# Others
+set(CPACK_SET_DESTDIR OFF)
+set(CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}/Packaging")
+
+
+# Generator
+if(PACKAGE_DISTROS)
+    set(CPACK_GENERATOR RPM DEB)
+
+elseif(LINUX)
+    set(CPACK_GENERATOR TGZ TBZ2 TXZ TZST)
+
+elseif(WIN32)
+    set(CPACK_GENERATOR NuGet STGZ)
+
+else()
+    set(CPACK_GENERATOR ZIP STGZ 7Z)
+
+endif()
+
+
+if(PACKAGE_SETUPS)
+    set(CPACK_GENERATOR ${CPACK_GENERATOR} External INNOSETUP NSIS NSIS64 IFW)
+endif()
+
+
+include(CPack)

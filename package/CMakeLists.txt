@@ -1,5 +1,5 @@
 option(PACKAGE_SETUPS "Package installers" OFF)
-option(PACKAGE_DISTROS "Package rpm and deb" ON)
+option(PACKAGE_DISTROS "Package rpm and deb" OFF)
 
 
 include(InstallRequiredSystemLibraries)

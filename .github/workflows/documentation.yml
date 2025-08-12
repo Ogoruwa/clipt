@@ -2,28 +2,30 @@ name: Documentation
 
 on:
   push:
-    tags:
-      - "*"
     branches: [ main ]
 
 jobs:
   build:
     name: Build and publish documentation
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Install Docs
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup
       run: |
         sudo apt-get install doxygen
-    - name: setup
-      run: |
         sudo apt-get install cmake
+
     - name: configure
       run: |
-        cmake -S . -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE="Debug"
+        cmake -S . -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE="Release"
+
     - name: build
       run: |
         cmake --build build --config Debug --target docs -j4
+
     - name: Deploy to GitHub Pages
       uses: Cecilapp/GitHub-Pages-deploy@v3
       env:

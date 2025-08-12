@@ -41,7 +41,7 @@ Based on the tutorial at [craftinginterpreters.com](https://craftinginterpreters
 3. Build the project. Files wil be generated under `bin` and `lib` folders.
 
 ```shell
-    cmake --build . --target all --      
+    cmake --build . --target all --
 ```
 
 ## Testing
@@ -53,11 +53,11 @@ Based on the tutorial at [craftinginterpreters.com](https://craftinginterpreters
 
 ## Packaging
 
-- Use the cmake option `-DPACKAGE_SETUPS=ON` to package `NSIS`, `Innosetup` and `IFW` installers. 
+- Use the cmake option `-DPACKAGE_SETUPS=ON` to package `NSIS`, `Innosetup` and `IFW` installers.
 
-- Use the cmake option `-DPACKAGE_DISTROS=ON` to generate `RPM` and `DEB` packages. 
+- Use the cmake option `-DPACKAGE_DISTROS=ON` to generate `RPM` and `DEB` packages.
 
 ```shell
     cd build
-    cpack 
+    cpack
 ```

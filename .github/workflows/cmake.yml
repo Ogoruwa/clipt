@@ -1,4 +1,6 @@
-name: CMake CI
+# https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
+
+name: CMake CI/CD
 
 on:
   push:
@@ -7,11 +9,13 @@ on:
     branches: [ main, dev ]
 
 jobs:
-  build:
+  CI/CD:
+    name: Cmake CI/CD
     runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
+      max-parallel: 3
 
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -39,7 +43,8 @@ jobs:
             c_compiler: cl
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repo
+      uses: actions/checkout@v4
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
@@ -66,3 +71,15 @@ jobs:
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest --build-config ${{ matrix.build_type }}
+
+    - name: Pack
+      working-directory: ${{ steps.strings.outputs.build-output-dir }}
+      run: cpack
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: CLipt-${{ matrix.os }}-${{ matrix.build_type }}
+        path: ${{ steps.strings.outputs.build-output-dir }}/Packaging/*.*
+        retention-days: 6
+        if-no-files-found: error

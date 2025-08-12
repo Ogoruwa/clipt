@@ -11,17 +11,19 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
-    - name: prepare
+    - name: setup
       run: |
-        make prepare
+        brew install cmake
     - name: configure
       run: |
-        cmake -H. -Bbuild -G "Unix Makefiles" -DCMAKE_BUILD_TYPE="Debug"
-    - name: building
+        cmake -S . -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug
+    - name: build
       run: |
-        cmake --build build --config Debug --target unit_tests -j4
-    - name: testing
+        cmake --build build --config Debug --target TestSuite -j4
+    - name: test
       run: |
         cd build
-        cd tests
-        ./unit_tests
+        ctest
+    - name: pack
+      run: |
+        cpack

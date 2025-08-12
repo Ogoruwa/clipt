@@ -16,7 +16,7 @@
  */
 bool is_whitespace(char c){
     return c == ' ' || c == '\t' || c == '\r' || c == '\n';
-}
+};
 
 /**
  * @brief Returns the size of a string with no trailing whitespace.
@@ -34,8 +34,8 @@ uint64_t strrssize(const char *s, uint64_t n){
         if (!is_whitespace(s[--i])){
             i++;
             break;
-        }
+        };
     };
 
     return i;
-}
+};

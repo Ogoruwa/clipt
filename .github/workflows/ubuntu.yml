@@ -11,21 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: install
+    - name: setup
       run: |
-        sudo apt-get install gcovr lcov
-    - name: prepare
-      run: |
-        make prepare
+        sudo apt-get install cmake
     - name: configure
       run: |
-        cmake -H. -Bbuild -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=On
-    - name: building
+        cmake -S . -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug
+    - name: build
       run: |
-        cmake --build build --config Debug --target coverage -j4
-    - name: testing
+        cmake --build build --config Debug --target TestSuite -j4
+    - name: test
       run: |
         cd build
-        cd tests
-        ./unit_tests
+        ctest
         bash <(curl -s https://codecov.io/bash)
+    - name: pack
+      run: |
+        cpack

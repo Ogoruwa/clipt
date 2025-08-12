@@ -11,18 +11,19 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
-    - name: prepare
+    - name: setup
       run: |
-        make prepare
+        choco install cmake
     - name: configure
       run: |
-        cmake -H"." -Bbuild -T host=x86 -A x64 -DCMAKE_BUILD_TYPE="Debug"
-    - name: building
+        cmake -S . -B build -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE="Debug"
+    - name: build
       run: |
-        cmake --build build --config Debug --target unit_tests -j4
-    - name: testing
+        cmake --build build --config Debug --target TestSuite -j4
+    - name: test
       run: |
         cd build
-        cd tests
-        cd Debug
-        .\unit_tests.exe
+        ctest
+    - name: pack
+      run: |
+        cpack

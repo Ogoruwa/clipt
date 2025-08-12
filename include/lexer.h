@@ -1,11 +1,10 @@
 #ifndef LEXER_H
+#define LEXER_H
 
 #include "token.h"
 
-#define LEXER_H
 
-
-typedef struct {
+typedef struct Lexer {
     uint64_t start;
     uint64_t current;
     uint64_t line;
@@ -15,5 +14,8 @@ typedef struct {
 
 
 Token *scan_tokens(Lexer *lexer);
+
+void reset_lexer(Lexer *lexer);
+
 
 #endif

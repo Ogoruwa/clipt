@@ -1,10 +1,9 @@
 #ifndef TOKEN_H
+#define TOKEN_H
+#define LEXEME_SIZE 4
 
 #include <stdlib.h>
 #include <stdint.h>
-
-#define TOKEN_H
-#define LEXEME_SIZE 4
 
 
 typedef enum TokenType {

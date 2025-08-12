@@ -1,10 +1,21 @@
-#include <stdint.h>
-
-#include "utils.h"
-
+#ifndef INTERPRETER_H
+#define INTERPRETER_H
 #define FILE_BUFFER_SIZE 128
 
+#include <stdint.h>
 
-short int run(char* string, uint64_t size);
+#include "lexer.h"
+#include "utils.h"
 
-short int run_script(char* path);
+
+typedef struct Interpreter {
+    Lexer lexer;
+} Interpreter;
+
+
+short int run(Interpreter *interpreter, char* string, uint64_t size);
+
+short int run_script(Interpreter *interpreter, char* path);
+
+
+#endif

@@ -7,5 +7,5 @@ void free_tokens(Token *token){
         t = token->next_token;
         free(token);
         token = t;
-    }
-}
+    };
+};

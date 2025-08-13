@@ -9,7 +9,7 @@ on:
     branches: [ main, dev ]
 
 jobs:
-  CI/CD:
+  CI_CD:
     name: Cmake CI/CD
     runs-on: ${{ matrix.os }}
 

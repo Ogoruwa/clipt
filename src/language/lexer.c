@@ -2,11 +2,32 @@
 
 #include "token.h"
 #include "lexer.h"
-#include "utils.h"
 
 
 bool is_finished(Lexer *lexer){
     return lexer->current >= lexer->slen;
+};
+
+
+char peek_character(Lexer *lexer) {
+    if (is_finished(lexer)){
+        return '\0';
+    };
+    return lexer->source[lexer->current];
+};
+
+
+bool match_character(Lexer *lexer, char expected){
+    if (is_finished(lexer)) {
+        return false;
+    };
+
+    if (lexer->source[lexer->current] == expected){
+        lexer->current++;
+        return true;
+    } else {
+        return false;
+    };
 };
 
 
@@ -38,14 +59,28 @@ Token *add_next_token(Lexer *lexer, TokenType token_type, void *literal){
 
 
 Token *scan_token(Lexer *lexer){
-    TokenType token_type = TEOF;
+    TokenType token_type;
     char character = *next_character(lexer);
 
-    if (is_whitespace(character)){
-        return NULL;
-    };
-
     switch (character){
+        case '\n':
+            lexer->line++;
+        case ' ':
+        case '\r':
+        case '\t': return NULL;
+
+        case '/':
+            if (match_character(lexer, '/')) {
+                // Peek at next character, so comments are added to line count
+                while (peek_character(lexer) != '\n' && !is_finished(lexer)){
+                    next_character(lexer);
+                };
+                return NULL;
+            } else {
+                token_type = SLASH;
+            };
+            break;
+
         case '{': token_type = LEFT_PAREN; break;
         case '}': token_type = RIGHT_PAREN; break;
         case '(': token_type = LEFT_BRACE; break;
@@ -53,13 +88,29 @@ Token *scan_token(Lexer *lexer){
         case '[': token_type = LEFT_BRACKET; break;
         case ']': token_type = RIGHT_BRACKET; break;
 
-        case '!': token_type = BANG; break;
-        case '=': token_type = EQUAL; break;
+        case '!':
+            token_type = BANG;
+            token_type = match_character(lexer, '=') ? BANG_EQUAL : token_type;
+            break;
+
+        case '=':
+            token_type = EQUAL;
+            token_type = match_character(lexer, '=') ? EQUAL_EQUAL : token_type;
+            break;
+
+        case '<':
+            token_type = LESS;
+            token_type = match_character(lexer, '=') ? LESS_EQUAL : token_type;
+            break;
+
+        case '>':
+            token_type = GREATER;
+            token_type = match_character(lexer, '=') ? GREATER_EQUAL : token_type;
+            break;
 
         case '+': token_type = PLUS; break;
         case '-': token_type = MINUS; break;
         case '*': token_type = STAR; break;
-        case '/': token_type = SLASH; break;
 
         case '.': token_type = DOT; break;
         case ',': token_type = COMMA; break;
@@ -69,7 +120,8 @@ Token *scan_token(Lexer *lexer){
         case '\'': token_type = SINGLE_QUOTE; break;
         case '"': token_type = DOUBLE_QUOTE; break;
 
-        default: return NULL; break;
+        // TODO: Raise error
+        default: return NULL;
     };
 
     // TODO: Add chracter analysis to determine what token to create

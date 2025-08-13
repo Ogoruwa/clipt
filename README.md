@@ -1,5 +1,14 @@
 # clipt
 
+[![pre-commit](https://github.com/Ogoruwa/clipt/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/Ogoruwa/clipt/actions/workflows/pre-commit.yml)
+
+[![CMake CI/CD](https://github.com/Ogoruwa/clipt/actions/workflows/cmake.yml/badge.svg)](https://github.com/Ogoruwa/clipt/actions/workflows/cmake.yml)
+
+[![Documentation](https://github.com/Ogoruwa/clipt/actions/workflows/documentation.yml/badge.svg)](https://github.com/Ogoruwa/clipt/actions/workflows/documentation.yml)
+
+[![CodeQL](https://github.com/Ogoruwa/clipt/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/Ogoruwa/clipt/actions/workflows/github-code-scanning/codeql)
+
+
 Scripting language written in C.
 
 ## Overview
@@ -14,6 +23,7 @@ Based on the tutorial at [craftinginterpreters.com](https://craftinginterpreters
 
 - Interpreter
 - REPL
+- Lexer
 
 ## Tips
 

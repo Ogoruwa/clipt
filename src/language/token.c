@@ -5,7 +5,14 @@ void free_tokens(Token *token){
 
     while (token != NULL){
         t = token->next_token;
+
+        if (token->literal != NULL){
+            free(token->literal);
+        };
+
+        free(token->lexeme);
         free(token);
+
         token = t;
     };
 };

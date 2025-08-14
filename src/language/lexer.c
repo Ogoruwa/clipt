@@ -9,14 +9,6 @@ bool is_finished(Lexer *lexer){
 };
 
 
-char peek_character(Lexer *lexer) {
-    if (is_finished(lexer)){
-        return '\0';
-    };
-    return lexer->source[lexer->current];
-};
-
-
 bool match_character(Lexer *lexer, char expected){
     if (is_finished(lexer)) {
         return false;
@@ -31,21 +23,29 @@ bool match_character(Lexer *lexer, char expected){
 };
 
 
-char *next_character(Lexer *lexer){
-    if (lexer->current < lexer->slen){
-        return &(lexer->source[lexer->current++]);
-    } else {
-        return NULL;
+char peek_character(Lexer *lexer) {
+    if (is_finished(lexer)){
+        return '\0';
     };
+    return lexer->source[lexer->current];
+};
+
+
+char next_character(Lexer *lexer){
+    if (is_finished(lexer)){
+        return '\0';
+    };
+    return lexer->source[lexer->current++];
 };
 
 
 Token *add_next_token(Lexer *lexer, TokenType token_type, void *literal){
     Token *token = NULL;
-    token = malloc(sizeof(Token));
+    uint64_t size = lexer->current - lexer->start;
 
-    memset(token->lexeme, '\0', sizeof token->lexeme);
-    strncpy( token->lexeme, &(lexer->source[lexer->start]), (lexer->current - lexer->start) );
+    token = malloc(sizeof(Token));
+    token->lexeme = calloc(size + 1, sizeof(char));
+    strncpy(token->lexeme, &(lexer->source[lexer->start]), size);
 
     token->token_type = token_type;
     token->line = lexer->line;
@@ -58,9 +58,40 @@ Token *add_next_token(Lexer *lexer, TokenType token_type, void *literal){
 };
 
 
+char *scan_string(Lexer *lexer, bool single){
+    uint64_t size = 0;
+    char *value = NULL;
+    char quote = single ? '\'' : '"';
+
+    while (!is_finished(lexer) && peek_character(lexer) != quote){
+        if (peek_character(lexer) == '\n'){
+            lexer->line++;
+        };
+        next_character(lexer);
+    };
+
+    // If source has been completely scanned, string was not terminated
+    // The above loop is broken only if the source has been scanned or the next character is the terminator
+    if (is_finished(lexer)){
+        // TODO: Raise error
+        return "";
+    };
+
+    next_character(lexer);
+    size = (lexer->current-1) - (lexer->start+1) + 1;
+
+    value = malloc(size);
+    memset(value, '\0', size);
+    strncpy(value, &(lexer->source[lexer->start+1]), size-1);
+
+    return value;
+};
+
+
 Token *scan_token(Lexer *lexer){
     TokenType token_type;
-    char character = *next_character(lexer);
+    void *literal = NULL;
+    char character = next_character(lexer);
 
     switch (character){
         case '\n':
@@ -117,15 +148,22 @@ Token *scan_token(Lexer *lexer){
         case ':': token_type = COLON; break;
         case ';': token_type = SEMICOLON; break;
 
-        case '\'': token_type = SINGLE_QUOTE; break;
-        case '"': token_type = DOUBLE_QUOTE; break;
+        case '\'':
+            token_type = STRING;
+            literal = scan_string(lexer, true);
+            break;
+
+        case '"':
+            token_type = STRING;
+            literal = scan_string(lexer, false);
+            break;
 
         // TODO: Raise error
         default: return NULL;
     };
 
     // TODO: Add chracter analysis to determine what token to create
-    return add_next_token(lexer, token_type, NULL);
+    return add_next_token(lexer, token_type, literal);
 };
 
 

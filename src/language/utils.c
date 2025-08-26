@@ -1,7 +1,4 @@
-#include <stdint.h>
-
 #include "utils.h"
-
 
 
 /**
@@ -45,3 +42,14 @@ uint64_t strrssize(const char *s, uint64_t n){
 
     return i;
 };
+
+
+/**
+ * @brief Handle out of memory errors.
+ *
+ * Prints a message and exits the program.
+ */
+void oom(){
+    printf("\n- - -> Out of memory\n");
+    exit(1);
+}

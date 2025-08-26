@@ -48,7 +48,10 @@ Token *add_next_token(Lexer *lexer, TokenType token_type, void *literal){
     Token *token = NULL;
     uint64_t size = lexer->current - lexer->start;
 
-    token = malloc(sizeof(Token));
+    if ((token = malloc(sizeof(Token))) == NULL){
+        oom();
+    };
+
     token->lexeme = calloc(size + 1, sizeof(char));
     strncpy(token->lexeme, &(lexer->source[lexer->start]), size);
 
@@ -85,7 +88,10 @@ char *scan_string(Lexer *lexer, bool single){
     next_character(lexer);
     size = (lexer->current-1) - (lexer->start+1) + 1;
 
-    value = malloc(size);
+    if((value = malloc(size)) == NULL){
+        oom();
+    };
+
     memset(value, '\0', size);
     // +1 and -1 to ignore the quotes
     strncpy(value, &(lexer->source[lexer->start+1]), size-1);
@@ -113,13 +119,18 @@ double *scan_number(Lexer *lexer){
     };
 
     size = lexer->current - lexer->start + 1;
-    string = malloc(size);
+    if((string = malloc(size)) == NULL){
+        oom();
+    };
+
     memset(string, '\0', size);
     strncpy(string, &(lexer->source[lexer->start]), size-1);
 
-    value = malloc(sizeof(double));
-    *value = strtod(string, &remainder);
+    if((value = malloc(sizeof(double))) == NULL){
+        oom();
+    };
 
+    *value = strtod(string, &remainder);
     assert(*remainder == '\0');
     free(string);
 

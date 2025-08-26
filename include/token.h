@@ -74,11 +74,11 @@ typedef enum TokenType {
 
 
 typedef struct Token {
-    char *lexeme;
+    char* lexeme;
     TokenType token_type;
     uint64_t line;
-    void *literal;
-    struct Token *next_token;
+    void* literal;
+    struct Token* next_token;
 } Token;
 
 

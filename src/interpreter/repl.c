@@ -24,8 +24,9 @@ void run_repl(){
     char* fp = NULL;
     char buffer[REPL_BUFFER_SIZE] = {'\0'};
 
+    Lexer lexer = {0, 0, 1, 0, NULL};
     Interpreter interpreter = {
-        {0, 0, 1, 0, NULL}
+        &lexer,
     };
 
     print_intro();
@@ -33,7 +34,7 @@ void run_repl(){
     do {
         if (eol){
             printf("> ");
-            reset_lexer(&interpreter.lexer);
+            reset_lexer(&lexer);
         };
 
         fp = fgets(buffer, REPL_BUFFER_SIZE, stdin);

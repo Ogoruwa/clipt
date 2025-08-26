@@ -14,13 +14,13 @@ typedef struct Lexer {
     uint64_t current;
     uint64_t line;
     uint64_t slen;
-    char *source;
+    const char* source;
 } Lexer;
 
 
-Token *scan_tokens(Lexer *lexer);
+Token *scan_tokens(Lexer* lexer);
 
-void reset_lexer(Lexer *lexer);
+void reset_lexer(Lexer* lexer);
 
 
 #endif

@@ -1,4 +1,4 @@
-set(sources token.c lexer.c utils.c)
+set(sources token.c lexer.c utils.c error.c)
 
 # Targets
 add_library(Lang SHARED ${sources})

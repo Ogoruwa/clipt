@@ -9,7 +9,7 @@
 
 
 typedef struct Interpreter {
-    Lexer lexer;
+    Lexer* lexer;
 } Interpreter;
 
 

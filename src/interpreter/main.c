@@ -18,11 +18,12 @@ void repl(){
 
 short int script(char* path){
     short int result;
+    Lexer lexer = {0, 0, 1, 0, NULL};
     Interpreter interpreter = {
-        {0, 0, 1, 0, NULL}
+        &lexer,
     };
 
-    reset_lexer(&interpreter.lexer);
+    reset_lexer(&lexer);
     result = run_script(&interpreter, path);
 
     return result;

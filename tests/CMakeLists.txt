@@ -1,4 +1,4 @@
-set(sources test_lexer.c)
+set(sources test_lexer.c test_error.c)
 create_test_sourcelist(tests testdriver.c ${sources})
 
 # Targets

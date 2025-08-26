@@ -12,9 +12,9 @@ short int run(Interpreter *interpreter, char *source, uint64_t size){
         return 0;
     };
 
-    interpreter->lexer.source = source;
-    interpreter->lexer.slen = size;
-    token = scan_tokens(&interpreter->lexer);
+    interpreter->lexer->source = source;
+    interpreter->lexer->slen = size;
+    token = scan_tokens(interpreter->lexer);
 
     Token *t = token;
     while (t != NULL){

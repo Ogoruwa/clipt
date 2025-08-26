@@ -8,7 +8,7 @@
 
 void test_scan_tokens_empty_source(){
     Lexer lexer = {0, 0, 1, 0, ""};
-    Token *token = scan_tokens(&lexer);
+    Token* token = scan_tokens(&lexer);
 
     assert(token == NULL && lexer.line == 1);
     free_tokens(token);
@@ -18,7 +18,7 @@ void test_scan_tokens_empty_source(){
 
 void test_scan_tokens_single_character(){
     Lexer lexer = {0, 0, 1, 1, "("};
-    Token *token = scan_tokens(&lexer);
+    Token* token = scan_tokens(&lexer);
 
     assert(token != NULL && lexer.line == 1);
     assert(strcmp(token->lexeme, "(") == 0);
@@ -34,8 +34,8 @@ void test_scan_tokens_single_character(){
 
 void test_scan_tokens_multiple_characters(){
     Lexer lexer = {0, 0, 1, 3, "( )"};
-    Token *token = scan_tokens(&lexer);
-    Token *t = token;
+    Token* token = scan_tokens(&lexer);
+    Token* t = token;
 
     assert(token != NULL && lexer.line == 1);
 
@@ -55,10 +55,10 @@ void test_scan_tokens_multiple_characters(){
 
 
 void test_scan_tokens_multiple_lines(){
-    char *source = "( (\n(  (\n((";
+    const char* source = "( (\n(  (\n((";
     Lexer lexer = {0, 0, 1, strlen(source), source};
-    Token *token = scan_tokens(&lexer);
-    Token *t = token;
+    Token* token = scan_tokens(&lexer);
+    Token* t = token;
 
     assert(token != NULL);
     assert(lexer.line == 3);
@@ -79,10 +79,10 @@ void test_scan_tokens_multiple_lines(){
 
 
 void test_scan_tokens_comments(){
-    char *source = "//( (\n( (\n()";
+    const char* source = "//( (\n( (\n()";
     Lexer lexer = {0, 0, 1, strlen(source), source};
-    Token *token = scan_tokens(&lexer);
-    Token *t = token;
+    Token* token = scan_tokens(&lexer);
+    Token* t = token;
 
     assert(token != NULL && lexer.line == 3);
 
@@ -102,10 +102,10 @@ void test_scan_tokens_comments(){
 
 
 void test_scan_tokens_two_character_lexemes(){
-    char *source = "!===<=>=";
+    const char* source = "!===<=>=";
     Lexer lexer = {0, 0, 1, strlen(source), source};
-    Token *token = scan_tokens(&lexer);
-    Token *t = token;
+    Token* token = scan_tokens(&lexer);
+    Token* t = token;
 
     assert(token != NULL && lexer.line == 1);
     assert(token->token_type == BANG_EQUAL && token->literal == NULL);
@@ -125,10 +125,10 @@ void test_scan_tokens_two_character_lexemes(){
 
 
 void test_scan_tokens_string_single_quote(){
-    char *source = "['Hello World']";
+    const char* source = "['Hello World']";
     Lexer lexer = {0, 0, 1, strlen(source), source};
-    Token *token = scan_tokens(&lexer);
-    Token *t = token;
+    Token* token = scan_tokens(&lexer);
+    Token* t = token;
 
     assert(token != NULL && lexer.line == 1);
 
@@ -153,10 +153,10 @@ void test_scan_tokens_string_single_quote(){
 
 
 void test_scan_tokens_string_double_quote(){
-    char *source = "(\n\"Quote\"";
+    const char* source = "(\n\"Quote\"";
     Lexer lexer = {0, 0, 1, strlen(source), source};
-    Token *token = scan_tokens(&lexer);
-    Token *t = token;
+    Token* token = scan_tokens(&lexer);
+    Token* t = token;
 
     assert(token != NULL && lexer.line == 2);
 
@@ -176,10 +176,10 @@ void test_scan_tokens_string_double_quote(){
 
 
 void test_scan_tokens_numbers(){
-    char *source = "10.1 900\n007 \n0301 201.187.0";
+    const char* source = "10.1 900\n007 \n0301 201.187.0";
     Lexer lexer = {0, 0, 1, strlen(source), source};
-    Token *token = scan_tokens(&lexer);
-    Token *t = token;
+    Token* token = scan_tokens(&lexer);
+    Token* t = token;
 
     assert(token != NULL && lexer.line == 3);
 

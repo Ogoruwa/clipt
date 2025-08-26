@@ -2,8 +2,11 @@
 #define LEXER_H
 
 #include <stdbool.h>
+#include <string.h>
+#include <assert.h>
 
 #include "token.h"
+#include "utils.h"
 
 
 typedef struct Lexer {

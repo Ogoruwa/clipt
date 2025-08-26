@@ -18,6 +18,12 @@ bool is_whitespace(char c){
     return c == ' ' || c == '\t' || c == '\r' || c == '\n';
 };
 
+
+bool is_digit(char c){
+    return c >= '0' && c <= '9';
+};
+
+
 /**
  * @brief Returns the size of a string with no trailing whitespace.
  *

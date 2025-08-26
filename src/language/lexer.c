@@ -1,6 +1,3 @@
-#include <string.h>
-
-#include "token.h"
 #include "lexer.h"
 
 
@@ -28,6 +25,14 @@ char peek_character(Lexer *lexer) {
         return '\0';
     };
     return lexer->source[lexer->current];
+};
+
+
+char peek_next_character(Lexer *lexer) {
+    if (lexer->current+1 >= lexer->slen){
+        return '\0';
+    };
+    return lexer->source[lexer->current+1];
 };
 
 
@@ -82,7 +87,41 @@ char *scan_string(Lexer *lexer, bool single){
 
     value = malloc(size);
     memset(value, '\0', size);
+    // +1 and -1 to ignore the quotes
     strncpy(value, &(lexer->source[lexer->start+1]), size-1);
+
+    return value;
+};
+
+
+double *scan_number(Lexer *lexer){
+    uint64_t size;
+    char *string = NULL;
+    char *remainder = NULL;
+    double *value = NULL;
+
+
+    while (is_digit(peek_character(lexer))){
+        next_character(lexer);
+    };
+
+    if (peek_character(lexer) == '.' && is_digit(peek_next_character(lexer))){
+        next_character(lexer);
+        while (is_digit(peek_character(lexer))){
+            next_character(lexer);
+        };
+    };
+
+    size = lexer->current - lexer->start + 1;
+    string = malloc(size);
+    memset(string, '\0', size);
+    strncpy(string, &(lexer->source[lexer->start]), size-1);
+
+    value = malloc(sizeof(double));
+    *value = strtod(string, &remainder);
+
+    assert(*remainder == '\0');
+    free(string);
 
     return value;
 };
@@ -107,6 +146,7 @@ Token *scan_token(Lexer *lexer){
                     next_character(lexer);
                 };
                 return NULL;
+
             } else {
                 token_type = SLASH;
             };
@@ -158,8 +198,14 @@ Token *scan_token(Lexer *lexer){
             literal = scan_string(lexer, false);
             break;
 
-        // TODO: Raise error
-        default: return NULL;
+        default:
+            if (is_digit(character)){
+                token_type = NUMBER;
+                literal = scan_number(lexer);
+            } else {
+                // TODO: Raise error
+                return NULL;
+            };
     };
 
     // TODO: Add chracter analysis to determine what token to create

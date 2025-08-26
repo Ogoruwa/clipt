@@ -46,7 +46,7 @@ void test_error_raise(){
 int test_error(){
     test_error_names();
 
-    test_error_raise();
+    test_error_creation();
 
     test_error_raise();
 

@@ -1,7 +1,7 @@
 #include "error.h"
 
 
-const char *get_error_name(ErrorType kind){
+const char* get_error_name(ErrorType kind){
     const char *names[NO_OF_ERRORS] = {
         [Exception] = "Exception",
         [SyntaxError] = "SyntaxError",
@@ -16,7 +16,7 @@ const char *get_error_name(ErrorType kind){
     };
 };
 
-const char *format_error(Error *err){
+char* format_error(Error *err){
     char* text;
     const char *name = get_error_name(err->kind);
 
@@ -31,9 +31,10 @@ const char *format_error(Error *err){
 
 
 void report_error(Error *err){
-    const char *text = format_error(err);
+    char* text = format_error(err);
 
     printf(text, "");
+    free(text);
 };
 
 

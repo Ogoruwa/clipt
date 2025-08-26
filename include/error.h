@@ -32,7 +32,7 @@ void free_error(Error *err);
 
 const char* get_error_name(ErrorType kind);
 
-const char* format_error(Error *exception);
+char* format_error(Error *exception);
 
 void report_error(Error *exception);
 

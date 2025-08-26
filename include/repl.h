@@ -1,8 +1,14 @@
+#ifndef REPL_H
+#define REPL_H
+#define REPL_BUFFER_SIZE 64
+
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
 
-#define REPL_BUFFER_SIZE 64
 
 
 void run_repl();
+
+
+#endif

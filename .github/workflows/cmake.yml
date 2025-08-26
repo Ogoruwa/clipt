@@ -9,7 +9,7 @@ on:
       - "**.c"
       - "**.h"
       - CMakeLists.txt
-      - .github/workflows/cmake.yml]
+      - .github/workflows/cmake.yml
 
   pull_request:
     branches: [ main, dev ]
@@ -17,12 +17,12 @@ on:
       - "**.c"
       - "**.h"
       - CMakeLists.txt
-      - .github/workflows/cmake.yml]
+      - .github/workflows/cmake.yml
 
 jobs:
   CI_CD:
     name: Cmake CI/CD
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{matrix.os}}
 
     strategy:
       fail-fast: false
@@ -30,7 +30,7 @@ jobs:
 
       matrix:
         os: [ubuntu-latest, macos-latest]
-        build_type: [Release]
+        build_type: [Debug, Release]
         c_compiler: [gcc, clang, cl]
         include:
           # - os: windows-latest
@@ -62,35 +62,61 @@ jobs:
       id: strings
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+        echo "build-output-dir=${{github.workspace}}/build" >> "$GITHUB_OUTPUT"
+        echo "artifact-name=CLipt-${{matrix.os}}-${{matrix.c_compiler}}-${{matrix.build_type}}" >> "$GITHUB_OUTPUT"
+        echo "test-executable=${{github.workspace}}/build/${{matrix.build_type}}/test_suite" >> "$GITHUB_OUTPUT"
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: >
-        cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -S ${{ github.workspace }}
+        cmake -S ${{github.workspace}} -B ${{steps.strings.outputs.build-output-dir}}
+        -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
+        -DCMAKE_C_COMPILER=${{matrix.c_compiler}} -DCMAKE_C_FLAGS="-fsanitize=address -fno-omit-frame-pointer"
 
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+      run: cmake --build ${{steps.strings.outputs.build-output-dir}} --config ${{matrix.build_type}}
 
     - name: Test
-      working-directory: ${{ steps.strings.outputs.build-output-dir }}
+      working-directory: ${{steps.strings.outputs.build-output-dir}}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: valgrind --leak-check=full --show-leak-kinds=all -s ctest --build-config ${{ matrix.build_type }}
+      run: ctest --build-config ${{matrix.build_type}}
 
     - name: Pack
-      working-directory: ${{ steps.strings.outputs.build-output-dir }}
+      working-directory: ${{steps.strings.outputs.build-output-dir}}
       run: cpack
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: CLipt-${{ matrix.os }}-${{ matrix.c_compiler}}-${{ matrix.build_type }}
-        path: ${{ steps.strings.outputs.build-output-dir }}/Packaging/*.*
+        name: ${{steps.strings.outputs.artifact-name}}
+        path: ${{steps.strings.outputs.build-output-dir}}/Packaging/*.*
         retention-days: 7
         if-no-files-found: error
+
+
+    # Run memory leak tests
+    - name: Install Valgrind
+      uses: ConorMacBride/install-package@v1
+      with:
+        brew: valgrind
+        apt: valgrind
+        choco: drmemory
+
+    - name: Run memory leak tests (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        # ASan prints to stderr; fail the job if any leak is reported
+        ${{steps.strings.outputs.test-executable}} || exit 1
+
+    - name: Run memory leak tests with Valgrind (Linux only)
+      if: runner.os == 'Linux'
+      run: |
+        valgrind --leak-check=full --error-exitcode=1 ${{steps.strings.outputs.test-executable}}
+
+    - name: Run tests with Dr.Memory (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        drmemory -leak_check -ignore_kernel -batch -results_to_stdout -- ${{steps.strings.outputs.test-executable}}

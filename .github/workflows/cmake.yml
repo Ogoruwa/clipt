@@ -102,22 +102,20 @@ jobs:
     - name: Install Valgrind
       uses: ConorMacBride/install-package@v1
       with:
-        brew: valgrind
         apt: valgrind
         choco: drmemory
 
-    - name: Run memory leak tests (Linux/macOS)
-      if: runner.os != 'Windows'
-      run: |
-        # ASan prints to stderr; fail the job if any leak is reported
-        ctest
-
-    - name: Run memory leak tests with Valgrind (Linux only)
+    - name: Run memory leak tests (Linux)
       if: runner.os == 'Linux'
       run: |
         valgrind --leak-check=full --show-leak-kinds=all -s ctest
 
-    - name: Run tests with Dr.Memory (Windows)
+    - name: Run memory leak tests (MacOS)
+      if: runner.os == 'macOS'
+      run: |
+        MallocStackLogging=1 leaks -atExit -- ctest
+
+    - name: Run memory leak tests (Windows)
       if: runner.os == 'Windows'
       run: |
         drmemory -leak_check -ignore_kernel -batch -results_to_stdout -- ctest

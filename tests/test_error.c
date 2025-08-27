@@ -2,6 +2,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include "lexer.h"
 #include "error.h"
 
 
@@ -20,7 +21,7 @@ void test_error_names(){
 void test_error_creation(){
     const char* source = "Hello World !";
     Lexer lexer = {0, 0, 1, strlen(source), source};
-    Error* err = error(&lexer, FileNotFoundError, "File not found");
+    Error* err = create_error(&lexer, FileNotFoundError, "File not found");
 
     assert(err->start == 0);
     assert(err->end == 0);

@@ -1,5 +1,4 @@
 #include "repl.h"
-#include "clipti.h"
 
 
 bool end_of_line(char *string){

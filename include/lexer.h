@@ -1,9 +1,8 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
-#include <assert.h>
 
 #include "token.h"
 #include "utils.h"

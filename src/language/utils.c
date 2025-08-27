@@ -49,7 +49,7 @@ uint64_t strrssize(const char *s, uint64_t n){
  *
  * Prints a message and exits the program.
  */
-void oom(){
+_Noreturn void oom(){
     printf("\n- - -> Out of memory\n");
     exit(1);
 }

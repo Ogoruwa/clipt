@@ -2,10 +2,10 @@
 #define INTERPRETER_H
 #define FILE_BUFFER_SIZE 128
 
-#include <stdint.h>
+#include <stdio.h>
 
+#include "token.h"
 #include "lexer.h"
-#include "utils.h"
 
 
 typedef struct Interpreter {
@@ -13,8 +13,9 @@ typedef struct Interpreter {
 } Interpreter;
 
 
-short int run(Interpreter* interpreter, char* string, uint64_t size);
+short int run(Interpreter* interpreter, char* source, uint64_t size);
 
 short int run_script(Interpreter* interpreter, char* path);
+
 
 #endif

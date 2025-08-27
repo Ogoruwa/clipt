@@ -1,6 +1,3 @@
-#include <errno.h>
-#include <stdio.h>
-
 #include "clipti.h"
 
 
@@ -16,6 +13,7 @@ short int run(Interpreter *interpreter, char *source, uint64_t size){
     interpreter->lexer->slen = size;
     token = scan_tokens(interpreter->lexer);
 
+    // Do stuff with parsed tokens
     Token *t = token;
     while (t != NULL){
         printf("%s", t->lexeme);
@@ -36,15 +34,16 @@ short int run_script(Interpreter *interpreter, char *path){
     if (fp == NULL){
         perror("Error");
         return 1;
+    };
 
-    } else {
-        char buffer[FILE_BUFFER_SIZE];
+    char buffer[FILE_BUFFER_SIZE];
 
-        while (fgets(buffer, FILE_BUFFER_SIZE, fp) != NULL){
-            run(interpreter, buffer, FILE_BUFFER_SIZE);
-        };
+    while (fgets(buffer, FILE_BUFFER_SIZE, fp) != NULL){
+        run(interpreter, buffer, FILE_BUFFER_SIZE);
+    };
 
-        fclose(fp);
+    if (fclose(fp) == EOF){
+        perror("Error closing file");
     };
 
     return 0;

@@ -14,9 +14,9 @@ bool match_character(Lexer *lexer, char expected){
     if (lexer->source[lexer->current] == expected){
         lexer->current++;
         return true;
-    } else {
-        return false;
     };
+
+    return false;
 };
 
 
@@ -48,7 +48,8 @@ Token *add_next_token(Lexer *lexer, TokenType token_type, void *literal){
     Token *token = NULL;
     uint64_t size = lexer->current - lexer->start;
 
-    if ((token = malloc(sizeof(Token))) == NULL){
+    token = malloc(sizeof(Token));
+    if (token == NULL){
         oom();
     };
 
@@ -88,7 +89,8 @@ char *scan_string(Lexer *lexer, bool single){
     next_character(lexer);
     size = (lexer->current-1) - (lexer->start+1) + 1;
 
-    if((value = malloc(size)) == NULL){
+    value = malloc(size);
+    if(value == NULL){
         oom();
     };
 
@@ -119,19 +121,20 @@ double *scan_number(Lexer *lexer){
     };
 
     size = lexer->current - lexer->start + 1;
-    if((string = malloc(size)) == NULL){
+    string = malloc(size);
+    if(string == NULL){
         oom();
     };
 
     memset(string, '\0', size);
     strncpy(string, &(lexer->source[lexer->start]), size-1);
 
-    if((value = malloc(sizeof(double))) == NULL){
+    value = malloc(sizeof(double));
+    if(value == NULL){
         oom();
     };
 
     *value = strtod(string, &remainder);
-    assert(*remainder == '\0');
     free(string);
 
     return value;

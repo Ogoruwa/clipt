@@ -3,12 +3,3 @@ build/
 bin/
 lib/
 install/
-
-# CMake files
-*.cmake
-Makefile
-CMakeCache.txt
-install_manifest.txt
-_CPack_Packages/
-Testing/
-CMakeFiles/

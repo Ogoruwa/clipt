@@ -11,9 +11,9 @@ const char* get_error_name(ErrorType kind){
 
     if (kind < NO_OF_ERRORS && kind >= 0){
         return names[kind];
-    } else {
-        return NULL;
     };
+
+    return NULL;
 };
 
 char* format_error(Error *err){
@@ -21,7 +21,8 @@ char* format_error(Error *err){
     const char *name = get_error_name(err->kind);
 
     size_t size = snprintf(NULL, 0, "[line %lu, %s] Error: %s\n", err->line, name, err->message) + 1;
-    if((text = malloc(size)) == NULL){
+    text = malloc(size);
+    if(text == NULL){
         oom();
     };
 
@@ -38,12 +39,14 @@ void report_error(Error *err){
 };
 
 
-Error* error(Lexer *lexer, ErrorType kind, const char* message){
+Error* create_error(Lexer *lexer, ErrorType kind, const char* message){
     Error* err;
 
-    if((err = malloc(sizeof(Error))) == NULL){
+    err = malloc(sizeof(Error));
+    if(err == NULL){
         oom();
     };
+
     err->start = lexer->start;
     err->end = lexer->current;
     err->line = lexer->line;
@@ -63,7 +66,7 @@ void free_error(Error *err){
 void raise_error(Lexer *lexer, ErrorType kind, const char* message){
     Error* err;
 
-    err = error(lexer, kind, message);
+    err = create_error(lexer, kind, message);
     report_error(err);
 
     free_error(err);

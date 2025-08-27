@@ -6,6 +6,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include "lexer.h"
+#include "clipti.h"
 
 
 void run_repl();

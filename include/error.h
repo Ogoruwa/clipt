@@ -2,9 +2,10 @@
 #define ERROR_H
 
 #include <stdint.h>
-#include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 
+#include "utils.h"
 #include "lexer.h"
 
 
@@ -26,17 +27,17 @@ typedef struct Error {
 } Error;
 
 
-Error* error(Lexer *lexer, ErrorType kind, const char* message);
+Error* create_error(Lexer* lexer, ErrorType kind, const char* message);
 
 void free_error(Error *err);
 
 const char* get_error_name(ErrorType kind);
 
-char* format_error(Error *exception);
+char* format_error(Error* err);
 
-void report_error(Error *exception);
+void report_error(Error* err);
 
-void raise_error(Lexer *lexer, ErrorType kind, const char* message);
+void raise_error(Lexer* lexer, ErrorType kind, const char* message);
 
 
 #endif

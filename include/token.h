@@ -2,8 +2,11 @@
 #define TOKEN_H
 #define LEXEME_SIZE 5
 
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "utils.h"
 
 
 typedef enum TokenType {
@@ -73,16 +76,18 @@ typedef enum TokenType {
 } TokenType;
 
 
-typedef struct Token {
+typedef struct Token_s {
     char* lexeme;
     TokenType token_type;
     uint64_t line;
     void* literal;
-    struct Token* next_token;
+    struct Token_s* next_token;
 } Token;
 
 
-void free_tokens(Token *token);
+Token* create_token(TokenType token_type, const char* lexeme, uint64_t lexeme_size, void* literal, uint64_t line);
+
+void free_tokens(Token* token);
 
 
 #endif

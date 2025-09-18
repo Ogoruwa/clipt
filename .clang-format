@@ -1,0 +1,53 @@
+Language:        Cpp
+AlignAfterOpenBracket: BlockIndent
+AlignConsecutiveAssignments: None
+AlignEscapedNewlines: Left
+AlignOperands:   true
+AlignTrailingComments: true
+AlwaysBreakBeforeMultilineStrings: false
+AllowShortBlocksOnASingleLine: Empty
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+BasedOnStyle: Google
+BinPackArguments: false
+BinPackParameters: OnePerLine
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Attach
+BreakStringLiterals: true
+ColumnLimit:     120
+CommentPragmas:  '^ IWYU pragma:'
+ContinuationIndentWidth: 4
+DerivePointerAlignment: false
+DisableFormat:   false
+ExperimentalAutoDetectBinPacking: false
+IncludeBlocks:   Preserve
+IndentCaseLabels: false
+IndentWidth:     4
+IndentWrappedFunctionNames: false
+InsertBraces: true
+KeepEmptyLines:
+  AtEndOfFile: false
+  AtStartOfBlock: false
+  AtStartOfFile: false
+MacroBlockBegin: ''
+MacroBlockEnd:   ''
+MaxEmptyLinesToKeep: 2
+NamespaceIndentation: All
+PenaltyBreakBeforeFirstCallParameter: 1
+PointerAlignment: Left
+ReflowComments:  Always
+SortIncludes: true
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceBeforeCaseColon: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: ControlStatements
+SpacesBeforeTrailingComments: 2
+SpacesInContainerLiterals: false
+SpacesInParentheses: false
+TabWidth:        4
+UseTab:          Never

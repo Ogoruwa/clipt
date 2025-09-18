@@ -1,0 +1,5 @@
+Checks: 'clang-analyzer-*,bugprone-*,cert-*,performance-*,readability-*,concurrency-*,portability-*,-readability-identifier-length*'
+HeaderFilterRegex: 'include/*.h'
+CheckOptions:
+    - key: readability-function-cognitive-complexity.IgnoreMacros
+      value: true

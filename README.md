@@ -1,8 +1,7 @@
 # clipt
 
-[![pre-commit](https://github.com/Ogoruwa/clipt/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/Ogoruwa/clipt/actions/workflows/pre-commit.yml)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Ogoruwa/clipt/main.svg)](https://results.pre-commit.ci/latest/github/Ogoruwa/clipt/dev.svg)
 [![CMake CI/CD](https://github.com/Ogoruwa/clipt/actions/workflows/cmake.yml/badge.svg)](https://github.com/Ogoruwa/clipt/actions/workflows/cmake.yml)
-[![Documentation](https://github.com/Ogoruwa/clipt/actions/workflows/documentation.yml/badge.svg)](https://github.com/Ogoruwa/clipt/actions/workflows/documentation.yml)
 [![CodeQL](https://github.com/Ogoruwa/clipt/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/Ogoruwa/clipt/actions/workflows/github-code-scanning/codeql)
 
 
@@ -18,17 +17,37 @@ Based on the tutorial at [craftinginterpreters.com](https://craftinginterpreters
 
 ## Features
 
+- Token
+- Lexer
 - Interpreter
 - REPL
-- Lexer
+- Error types
 
 ## Tips
 
-- Execute all cmake related under the `build` directory
+- Execute all `cmake` related commands under the `build` directory
 
-- Tests are built by default, to disable, use the cmake option (when configuring) `-DBUILD_TESTING=OFF`
+## Configuration Options
 
-## Installation
+Options can be enabled and disabled when configuring, using the `-D` flag
+
+```shell
+   cmake -DEXAMPLE=ON
+```
+
+The avaiable options are listed below, in this format -> `OPTIONNAME` (`DEFAULT VALUE`)
+
+- `BUILD_INTERPRETER` (`ON`): Build the interpreter
+
+- `ENABLE_CLANG_TIDY` (`OFF`): Enable clang-tidy checks, requires `clang-tidy` on your path
+
+- `CLANG_TIDY_WARNINGS_AS_ERRORS` (`OFF`): Take clang-tidy warnings as errors
+
+- `PACKAGE_SETUPS` (`OFF`): Package `NSIS`, `Innosetup` and `IFW` installers, when using `cpack`
+
+- `PACKAGE_DISTROS` (`OFF`): Generate `RPM` and `DEB` packages, when using `cpack`
+
+## Building
 
 1. Clone this repository and enter the directory
 
@@ -59,10 +78,6 @@ Based on the tutorial at [craftinginterpreters.com](https://craftinginterpreters
 ```
 
 ## Packaging
-
-- Use the cmake option `-DPACKAGE_SETUPS=ON` to package `NSIS`, `Innosetup` and `IFW` installers.
-
-- Use the cmake option `-DPACKAGE_DISTROS=ON` to generate `RPM` and `DEB` packages.
 
 ```shell
     cd build

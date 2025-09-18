@@ -11,12 +11,12 @@
  *
  * @return True if the character is whitespace, false otherwise.
  */
-bool is_whitespace(char c){
+bool is_whitespace(char c) {
     return c == ' ' || c == '\t' || c == '\r' || c == '\n';
 };
 
 
-bool is_digit(char c){
+bool is_digit(char c) {
     return c >= '0' && c <= '9';
 };
 
@@ -30,11 +30,11 @@ bool is_digit(char c){
  * @return Size of the stripped string.
  */
 
-uint64_t strrssize(const char *s, uint64_t n){
+uint64_t strrssize(const char* s, uint64_t n) {
     uint64_t i = n;
 
-    while(i >= 1){
-        if (!is_whitespace(s[--i])){
+    while (i >= 1) {
+        if (!is_whitespace(s[--i])) {
             i++;
             break;
         };
@@ -49,7 +49,7 @@ uint64_t strrssize(const char *s, uint64_t n){
  *
  * Prints a message and exits the program.
  */
-_Noreturn void oom(){
-    printf("\n- - -> Out of memory\n");
-    exit(1);
+_Noreturn void oom() {
+    (void)fprintf(stderr, "\n- - -> Out of memory\n");
+    abort();
 }

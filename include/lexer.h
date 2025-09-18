@@ -8,7 +8,7 @@
 #include "utils.h"
 
 
-typedef struct Lexer {
+typedef struct Lexer_s {
     uint64_t start;
     uint64_t current;
     uint64_t line;
@@ -17,7 +17,7 @@ typedef struct Lexer {
 } Lexer;
 
 
-Token *scan_tokens(Lexer* lexer);
+Token* scan_tokens(Lexer* lexer);
 
 void reset_lexer(Lexer* lexer);
 

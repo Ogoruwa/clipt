@@ -1,11 +1,11 @@
 #include "clipti.h"
 
 
-short int run(Interpreter *interpreter, char *source, uint64_t size){
-    Token *token = NULL;
+short int run(Interpreter* interpreter, char* source, uint64_t size) {
+    Token* token = NULL;
 
     size = strrssize(source, size);
-    if (size == 0){
+    if (size == 0) {
         return 0;
     };
 
@@ -14,8 +14,8 @@ short int run(Interpreter *interpreter, char *source, uint64_t size){
     token = scan_tokens(interpreter->lexer);
 
     // Do stuff with parsed tokens
-    Token *t = token;
-    while (t != NULL){
+    Token* t = token;
+    while (t != NULL) {
         printf("%s", t->lexeme);
         t = t->next_token;
     };
@@ -27,22 +27,22 @@ short int run(Interpreter *interpreter, char *source, uint64_t size){
 };
 
 
-short int run_script(Interpreter *interpreter, char *path){
-    FILE *fp;
+short int run_script(Interpreter* interpreter, char* path) {
+    FILE* fp;
     fp = fopen(path, "r");
 
-    if (fp == NULL){
+    if (fp == NULL) {
         perror("Error");
         return 1;
     };
 
     char buffer[FILE_BUFFER_SIZE];
 
-    while (fgets(buffer, FILE_BUFFER_SIZE, fp) != NULL){
+    while (fgets(buffer, FILE_BUFFER_SIZE, fp) != NULL) {
         run(interpreter, buffer, FILE_BUFFER_SIZE);
     };
 
-    if (fclose(fp) == EOF){
+    if (fclose(fp) == EOF) {
         perror("Error closing file");
     };
 

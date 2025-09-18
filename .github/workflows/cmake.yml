@@ -26,6 +26,9 @@ jobs:
     name: Cmake CI/CD
     runs-on: ${{matrix.os}}
 
+    env:
+      IS_MAIN_BRANCH: ${{ (github.event_name == 'push' && github.head_ref == 'main') || github.ref_name == 'main'  }}
+
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -69,13 +72,36 @@ jobs:
         echo "test-executable=${{github.workspace}}/build/bin/${{matrix.build_type}}/test_suite" >> "$GITHUB_OUTPUT"
         echo "repl-executable=${{github.workspace}}/build/bin/${{matrix.build_type}}/clipti" >> "$GITHUB_OUTPUT"
 
+
+    # Install clang tidy
+    - name: Install clang-tidy
+      if: env.IS_MAIN_BRANCH
+      uses: ConorMacBride/install-package@v1
+      with:
+        apt: clang-tidy
+        choco: llvm
+        brew: llvm
+
+    - name: Setup path to clang-tidy (MacOS)
+      if: runner.os == 'macOS'
+      run: |
+        echo "PATH=$(brew --prefix llvm)/bin:${PATH}" >> $GITHUB_ENV
+
+    - name: Setup path to clang-tidy (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        echo "PATH=C:\Program Files\LLVM\bin;${PATH}" >> $GITHUB_ENV
+
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: >
         cmake -S ${{github.workspace}} -B ${{steps.strings.outputs.build-output-dir}}
         -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
-        -DCMAKE_C_COMPILER=${{matrix.c_compiler}} -DCMAKE_C_FLAGS="-fsanitize=address -fno-omit-frame-pointer"
+        -DCMAKE_C_COMPILER=${{matrix.c_compiler}}
+        -DCMAKE_C_FLAGS="-fsanitize=address -fno-omit-frame-pointer"
+        -DENABLE_CLANG_TIDY=ON -DCLANG_TIDY_WARNINGS_AS_ERRORS=${{((env.IS_MAIN_BRANCH == 'true') && 'ON') || 'OFF'}}
+
 
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).

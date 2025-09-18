@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "utils.h"
 #include "lexer.h"
+#include "utils.h"
 
 
 typedef enum ErrorType {
@@ -17,7 +17,8 @@ typedef enum ErrorType {
     NO_OF_ERRORS,
 } ErrorType;
 
-typedef struct Error {
+
+typedef struct Error_s {
     uint64_t start;
     uint64_t end;
     uint64_t line;
@@ -29,7 +30,7 @@ typedef struct Error {
 
 Error* create_error(Lexer* lexer, ErrorType kind, const char* message);
 
-void free_error(Error *err);
+void free_error(Error* err);
 
 const char* get_error_name(ErrorType kind);
 

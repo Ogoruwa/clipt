@@ -1,0 +1,61 @@
+name: 🔧 Feature
+description: Propose a new feature or an improvement to an existing one
+title: "[FEATURE]: <short title>"
+
+labels: ["feature", "triage"]
+assignees: ["Ogoruwa"]
+
+
+body:
+- type: checkboxes
+  attributes:
+    label: Has this been reported before?
+    description: Please search to make sure a similar issue does not exist.
+    options:
+      - label: I have searched the existing issues and confirm this is a new feature.
+  validations:
+    required: true
+
+
+- type: textarea
+  attributes:
+    label: What should be added or changed?
+    description: |
+      Provide a concise yet complete description of the desired feature.
+      • What problem does it solve?
+      • Who benefits from it?
+      • Any UI/CLI examples you have in mind.
+  validations:
+    required: true
+
+
+- type: textarea
+  attributes:
+    label: Alternative solutions
+    description: |
+      List any other ways you think the problem could be addressed.
+      This helps us evaluate trade-offs and avoid duplicate effort.
+    render: markdown
+  validations:
+    required: false
+
+
+- type: textarea
+  attributes:
+    label: Anything else?
+    description: |
+      Links, mock-ups, reference implementations, or any other material that clarifies the request.
+
+      *Tip:* Drag and drop images or files into this box to attach them.
+  validations:
+    required: false
+
+
+- type: checkboxes
+  attributes:
+    label: Code of Conduct
+    description: By submitting this issue you agree to follow the project's [Code of Conduct](https://github.com/Ogoruwa/clipt/).
+    options:
+      - label: I agree to follow this project's Code of Conduct
+  validations:
+    required: true

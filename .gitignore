@@ -1,5 +1,9 @@
 .vscode/
+.artifacts/
+
 build/
 bin/
 lib/
 install/
+
+.actrc

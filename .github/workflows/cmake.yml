@@ -134,16 +134,19 @@ jobs:
         choco: drmemory
 
     - name: Run memory leak tests (Linux)
+      working-directory: ${{steps.strings.outputs.build-output-dir}}
       if: runner.os == 'Linux'
       run: |
         valgrind --leak-check=full --show-leak-kinds=all -s ctest
 
     - name: Run memory leak tests (MacOS)
+      working-directory: ${{steps.strings.outputs.build-output-dir}}
       if: runner.os == 'macOS'
       run: |
         MallocStackLogging=1 leaks -atExit -- ctest
 
     - name: Run memory leak tests (Windows)
+      working-directory: ${{steps.strings.outputs.build-output-dir}}
       if: runner.os == 'Windows'
       run: |
         drmemory -leak_check -ignore_kernel -batch -results_to_stdout -- ctest

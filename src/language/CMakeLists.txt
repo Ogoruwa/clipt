@@ -6,4 +6,8 @@ set_target_properties(Lang PROPERTIES OUTPUT_NAME clipt)
 
 target_include_directories(Lang PUBLIC "${CMAKE_SOURCE_DIR}/include")
 
-install(TARGETS Lang)
+install(TARGETS Lang
+    RUNTIME DESTINATION lib
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+)

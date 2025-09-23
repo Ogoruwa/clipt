@@ -134,78 +134,78 @@ Token* scan_token(Lexer* lexer) {
     char character = next_character(lexer);
 
     switch (character) {
-    case '\n': lexer->line++;
-    case ' ':
-    case '\r':
-    case '\t': return NULL;
+        case '\n': lexer->line++;
+        case ' ':
+        case '\r':
+        case '\t': return NULL;
 
-    case '/':
-        if (match_character(lexer, '/')) {
-            // Peek at next character, so comments are added to line count
-            while (peek_character(lexer) != '\n' && !is_finished(lexer)) {
-                next_character(lexer);
+        case '/':
+            if (match_character(lexer, '/')) {
+                // Peek at next character, so comments are added to line count
+                while (peek_character(lexer) != '\n' && !is_finished(lexer)) {
+                    next_character(lexer);
+                };
+                return NULL;
+
+            } else {
+                token_type = SLASH;
             };
-            return NULL;
+            break;
 
-        } else {
-            token_type = SLASH;
-        };
-        break;
+        case '{': token_type = LEFT_PAREN; break;
+        case '}': token_type = RIGHT_PAREN; break;
+        case '(': token_type = LEFT_BRACE; break;
+        case ')': token_type = RIGHT_BRACE; break;
+        case '[': token_type = LEFT_BRACKET; break;
+        case ']': token_type = RIGHT_BRACKET; break;
 
-    case '{': token_type = LEFT_PAREN; break;
-    case '}': token_type = RIGHT_PAREN; break;
-    case '(': token_type = LEFT_BRACE; break;
-    case ')': token_type = RIGHT_BRACE; break;
-    case '[': token_type = LEFT_BRACKET; break;
-    case ']': token_type = RIGHT_BRACKET; break;
+        case '!':
+            token_type = BANG;
+            token_type = match_character(lexer, '=') ? BANG_EQUAL : token_type;
+            break;
 
-    case '!':
-        token_type = BANG;
-        token_type = match_character(lexer, '=') ? BANG_EQUAL : token_type;
-        break;
+        case '=':
+            token_type = EQUAL;
+            token_type = match_character(lexer, '=') ? EQUAL_EQUAL : token_type;
+            break;
 
-    case '=':
-        token_type = EQUAL;
-        token_type = match_character(lexer, '=') ? EQUAL_EQUAL : token_type;
-        break;
+        case '<':
+            token_type = LESS;
+            token_type = match_character(lexer, '=') ? LESS_EQUAL : token_type;
+            break;
 
-    case '<':
-        token_type = LESS;
-        token_type = match_character(lexer, '=') ? LESS_EQUAL : token_type;
-        break;
+        case '>':
+            token_type = GREATER;
+            token_type = match_character(lexer, '=') ? GREATER_EQUAL : token_type;
+            break;
 
-    case '>':
-        token_type = GREATER;
-        token_type = match_character(lexer, '=') ? GREATER_EQUAL : token_type;
-        break;
+        case '+': token_type = PLUS; break;
+        case '-': token_type = MINUS; break;
+        case '*': token_type = STAR; break;
 
-    case '+': token_type = PLUS; break;
-    case '-': token_type = MINUS; break;
-    case '*': token_type = STAR; break;
+        case '.': token_type = DOT; break;
+        case ',': token_type = COMMA; break;
+        case ':': token_type = COLON; break;
+        case ';': token_type = SEMICOLON; break;
 
-    case '.': token_type = DOT; break;
-    case ',': token_type = COMMA; break;
-    case ':': token_type = COLON; break;
-    case ';': token_type = SEMICOLON; break;
+        case '\'':
+            token_type = STRING;
+            literal = scan_string(lexer, true);
+            break;
 
-    case '\'':
-        token_type = STRING;
-        literal = scan_string(lexer, true);
-        break;
+        case '"':
+            token_type = STRING;
+            literal = scan_string(lexer, false);
+            break;
 
-    case '"':
-        token_type = STRING;
-        literal = scan_string(lexer, false);
-        break;
-
-    default:
-        if (is_digit(character)) {
-            token_type = NUMBER;
-            literal = scan_number(lexer);
-        } else {
-            // TODO: Raise error
-            return NULL;
-        };
+        default:
+            if (is_digit(character)) {
+                token_type = NUMBER;
+                literal = scan_number(lexer);
+            } else {
+                // TODO: Raise error
+                return NULL;
+            };
     };
 
     // TODO: Add chracter analysis to determine what token to create

@@ -4,7 +4,7 @@ create_test_sourcelist(tests testdriver.c ${sources})
 # Targets
 add_executable(TestSuite ${tests})
 set_target_properties(TestSuite PROPERTIES OUTPUT_NAME test_suite)
-target_link_libraries(TestSuite PUBLIC Lang)
+target_link_libraries(TestSuite PRIVATE Lang)
 
 
 # Tests

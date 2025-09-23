@@ -8,7 +8,7 @@
 #include "token.h"
 
 
-typedef struct Interpreter {
+typedef struct Interpreter_s {
     Lexer* lexer;
 } Interpreter;
 
@@ -16,6 +16,8 @@ typedef struct Interpreter {
 short int run(Interpreter* interpreter, char* source, uint64_t size);
 
 short int run_script(Interpreter* interpreter, char* path);
+
+Interpreter* create_interpreter();
 
 
 #endif

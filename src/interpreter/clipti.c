@@ -48,3 +48,24 @@ short int run_script(Interpreter* interpreter, char* path) {
 
     return 0;
 };
+
+
+Interpreter* create_interpreter() {
+    Lexer* lexer = (Lexer*)malloc(sizeof(Lexer));
+    if (lexer == NULL) {
+        perror("Failed to allocate memory for lexer");
+        oom();
+    };
+    reset_lexer(lexer);
+
+    Interpreter* interpreter = (Interpreter*)malloc(sizeof(Interpreter));
+    if (interpreter == NULL) {
+        perror("Failed to allocate memory for interpreter");
+        free(lexer);
+        oom();
+    };
+
+    interpreter->lexer = lexer;
+
+    return interpreter;
+};

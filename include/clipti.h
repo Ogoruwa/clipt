@@ -4,8 +4,8 @@
 
 #include <stdio.h>
 
-#include "token.h"
 #include "lexer.h"
+#include "token.h"
 
 
 typedef struct Interpreter {

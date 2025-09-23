@@ -1,12 +1,12 @@
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
 
-#include "lexer.h"
 #include "error.h"
+#include "lexer.h"
 
 
-void test_error_names(){
+void test_error_names() {
     // Seg fault is raised if error name is not set
     assert(strcmp(get_error_name(Exception), "Exception") == 0);
     assert(strcmp(get_error_name(SyntaxError), "SyntaxError") == 0);
@@ -18,7 +18,7 @@ void test_error_names(){
 };
 
 
-void test_error_creation(){
+void test_error_creation() {
     const char* source = "Hello World !";
     Lexer lexer = {0, 0, 1, strlen(source), source};
     Error* err = create_error(&lexer, FileNotFoundError, "File not found");
@@ -35,7 +35,7 @@ void test_error_creation(){
 };
 
 
-void test_error_raise(){
+void test_error_raise() {
     const char* source = "An error occured here.";
     Lexer lexer = {0, 0, strlen(source), strlen(source), source};
     raise_error(&lexer, Exception, "Oops");
@@ -44,7 +44,7 @@ void test_error_raise(){
 };
 
 
-int test_error(){
+int test_error() {
     test_error_names();
 
     test_error_creation();

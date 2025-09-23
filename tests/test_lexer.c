@@ -1,12 +1,12 @@
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
 
 #include "lexer.h"
 #include "token.h"
 
 
-void test_scan_tokens_empty_source(){
+void test_scan_tokens_empty_source() {
     Lexer lexer = {0, 0, 1, 0, ""};
     Token* token = scan_tokens(&lexer);
 
@@ -18,7 +18,7 @@ void test_scan_tokens_empty_source(){
 };
 
 
-void test_scan_tokens_single_character(){
+void test_scan_tokens_single_character() {
     Lexer lexer = {0, 0, 1, 1, "("};
     Token* token = scan_tokens(&lexer);
 
@@ -36,7 +36,7 @@ void test_scan_tokens_single_character(){
 };
 
 
-void test_scan_tokens_multiple_characters(){
+void test_scan_tokens_multiple_characters() {
     Lexer lexer = {0, 0, 1, 3, "( )"};
     Token* token = scan_tokens(&lexer);
     Token* t = token;
@@ -63,7 +63,7 @@ void test_scan_tokens_multiple_characters(){
 };
 
 
-void test_scan_tokens_multiple_lines(){
+void test_scan_tokens_multiple_lines() {
     const char* source = "( (\n(  (\n((";
     Lexer lexer = {0, 0, 1, strlen(source), source};
     Token* token = scan_tokens(&lexer);
@@ -73,7 +73,7 @@ void test_scan_tokens_multiple_lines(){
     assert(lexer.line == 3);
 
     short int i = 1;
-    while (token != NULL){
+    while (token != NULL) {
         assert(strcmp(token->lexeme, "(") == 0);
         assert(token->token_type == LEFT_BRACE);
         assert(token->literal == NULL);
@@ -87,7 +87,7 @@ void test_scan_tokens_multiple_lines(){
 };
 
 
-void test_scan_tokens_comments(){
+void test_scan_tokens_comments() {
     const char* source = "//( (\n( (\n()";
     Lexer lexer = {0, 0, 1, strlen(source), source};
     Token* token = scan_tokens(&lexer);
@@ -96,7 +96,7 @@ void test_scan_tokens_comments(){
     assert(token != NULL && lexer.line == 3);
 
     // Skip all the way to the last token
-    while(token->next_token != NULL){
+    while (token->next_token != NULL) {
         token = token->next_token;
     };
 
@@ -110,7 +110,7 @@ void test_scan_tokens_comments(){
 };
 
 
-void test_scan_tokens_two_character_lexemes(){
+void test_scan_tokens_two_character_lexemes() {
     const char* source = "!===<=>=";
     Lexer lexer = {0, 0, 1, strlen(source), source};
     Token* token = scan_tokens(&lexer);
@@ -146,7 +146,7 @@ void test_scan_tokens_two_character_lexemes(){
 };
 
 
-void test_scan_tokens_string_single_quote(){
+void test_scan_tokens_string_single_quote() {
     const char* source = "['Hello World']";
     Lexer lexer = {0, 0, 1, strlen(source), source};
     Token* token = scan_tokens(&lexer);
@@ -180,7 +180,7 @@ void test_scan_tokens_string_single_quote(){
 };
 
 
-void test_scan_tokens_string_double_quote(){
+void test_scan_tokens_string_double_quote() {
     const char* source = "(\n\"Quote\"";
     Lexer lexer = {0, 0, 1, strlen(source), source};
     Token* token = scan_tokens(&lexer);
@@ -207,7 +207,7 @@ void test_scan_tokens_string_double_quote(){
 };
 
 
-void test_scan_tokens_numbers(){
+void test_scan_tokens_numbers() {
     const char* source = "10.1 900\n007 \n0301 201.187.0";
     Lexer lexer = {0, 0, 1, strlen(source), source};
     Token* token = scan_tokens(&lexer);
@@ -219,35 +219,35 @@ void test_scan_tokens_numbers(){
     assert(token->token_type == NUMBER);
     assert(token->line == 1);
     assert(strcmp(token->lexeme, "10.1") == 0);
-    assert(*((double *)token->literal) == 10.1);
+    assert(*((double*)token->literal) == 10.1);
     token = token->next_token;
 
     assert(token != NULL);
     assert(token->token_type == NUMBER);
     assert(token->line == 1);
     assert(strcmp(token->lexeme, "900") == 0);
-    assert(*((double *)token->literal) == 900);
+    assert(*((double*)token->literal) == 900);
     token = token->next_token;
 
     assert(token != NULL);
     assert(token->token_type == NUMBER);
     assert(token->line == 2);
     assert(strcmp(token->lexeme, "007") == 0);
-    assert(*((double *)token->literal) == 7);
+    assert(*((double*)token->literal) == 7);
     token = token->next_token;
 
     assert(token != NULL);
     assert(token->token_type == NUMBER);
     assert(token->line == 3);
     assert(strcmp(token->lexeme, "0301") == 0);
-    assert(*((double *)token->literal) == 301);
+    assert(*((double*)token->literal) == 301);
     token = token->next_token;
 
     assert(token != NULL);
     assert(token->token_type == NUMBER);
     assert(token->line == 3);
     assert(strcmp(token->lexeme, "201.187") == 0);
-    assert(*((double *)token->literal) == 201.187);
+    assert(*((double*)token->literal) == 201.187);
     token = token->next_token;
 
     assert(token != NULL);
@@ -260,7 +260,7 @@ void test_scan_tokens_numbers(){
     assert(token->token_type == NUMBER);
     assert(token->line == 3);
     assert(strcmp(token->lexeme, "0") == 0);
-    assert(*((double *)token->literal) == 0);
+    assert(*((double*)token->literal) == 0);
     token = token->next_token;
     assert(token == NULL);
 
@@ -269,7 +269,7 @@ void test_scan_tokens_numbers(){
 };
 
 
-int test_lexer(){
+int test_lexer() {
     printf("\ntest_lexer started.\n");
     printf("Size of a token -> %lu bytes\n", sizeof(Token));
 

@@ -13,7 +13,7 @@ typedef struct Interpreter_s {
 } Interpreter;
 
 
-short int run(Interpreter* interpreter, char* source, uint64_t size);
+bool run(Interpreter* interpreter, char* source, uint64_t size);
 
 short int run_script(Interpreter* interpreter, char* path);
 

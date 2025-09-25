@@ -2,77 +2,80 @@
 #define TOKEN_H
 #define LEXEME_SIZE 5
 
+#include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "hashmap.h"
 
 #include "utils.h"
 
 
 typedef enum TokenType {
     // Blocks
-    LEFT_PAREN = 1,
-    RIGHT_PAREN = 2,
-    LEFT_BRACE = 3,
-    RIGHT_BRACE = 4,
-    LEFT_BRACKET = 5,
-    RIGHT_BRACKET = 6,
+    LEFT_PAREN,
+    RIGHT_PAREN,
+    LEFT_BRACE,
+    RIGHT_BRACE,
+    LEFT_BRACKET,
+    RIGHT_BRACKET,
 
     // Separators
-    COMMA = 7,
-    DOT = 8,
-    SEMICOLON = 9,
-    COLON = 10,
+    COMMA,
+    DOT,
+    SEMICOLON,
+    COLON,
 
     // Arithmetic operators
-    MINUS = 20,
-    PLUS = 21,
-    SLASH = 22,
-    STAR = 23,
+    MINUS,
+    PLUS,
+    SLASH,
+    STAR,
 
     // Boolean operators.
-    AND = 30,
-    OR = 31,
+    AND,
+    OR,
 
     // Relational operators.
-    BANG = 40,
-    BANG_EQUAL = 41,
-    EQUAL = 42,
-    EQUAL_EQUAL = 43,
-    GREATER = 44,
-    GREATER_EQUAL = 45,
-    LESS = 46,
-    LESS_EQUAL = 47,
+    BANG,
+    BANG_EQUAL,
+    EQUAL,
+    EQUAL_EQUAL,
+    GREATER,
+    GREATER_EQUAL,
+    LESS,
+    LESS_EQUAL,
 
     // Literals
-    NIL = 60,
-    FALSE = 61,
-    TRUE = 62,
-    VARIABLE = 63,
-    CONSTANT = 64,
-    STRING = 65,
-    NUMBER = 66,
+    NIL,
+    FALSE,
+    TRUE,
+    IDENTIFIER,
+    STRING,
+    NUMBER,
 
     // Control flow
-    FOR = 70,
-    WHILE = 71,
-    IF = 72,
-    ELSE = 73,
-    ELIF = 74,
-    CONTINUE = 75,
-    BREAK = 76,
-    RETURN = 77,
+    FOR,
+    WHILE,
+    IF,
+    ELSE,
+    ELIF,
+    CONTINUE,
+    BREAK,
+    RETURN,
 
     // Functions and classes
-    FN = 80,
-    CLASS = 81,
-    SUPER = 82,
-    SELF = 83,
+    FN,
+    CLASS,
+    SUPER,
+    SELF,
 
     // Keywords
-    PRINT = 101,
+    PRINT,
 
-    TEOF = 128,
+    TEOF,
+    NO_OF_TOKENS
 } TokenType;
 
 
@@ -85,9 +88,23 @@ typedef struct Token_s {
 } Token;
 
 
+typedef struct KeywordHash_s {
+    TokenType token_type;
+    const char* lexeme;
+} KeywordHash;
+
+
 Token* create_token(TokenType token_type, const char* lexeme, uint64_t lexeme_size, void* literal, uint64_t line);
 
 void free_tokens(Token* token);
+
+bool tokencmp(Token* a, Token* b);
+
+void print_token(Token* token);
+
+const char* get_token_type_name(TokenType token_type);
+
+struct hashmap* get_keyword_hashmap();
 
 
 #endif

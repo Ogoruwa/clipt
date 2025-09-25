@@ -269,6 +269,42 @@ void test_scan_tokens_numbers() {
 };
 
 
+void test_scan_tokens_identifiers() {
+    char* source = "var1 _no2 _3 06 9r";
+    Lexer lexer = {0, 0, 1, strlen(source), source};
+    Token* token = scan_tokens(&lexer);
+
+    assert(token->token_type == IDENTIFIER);
+    assert(strcmp(token->lexeme, "var1") == 0);
+
+    free_tokens(token);
+    printf("test_scan_tokens_identifiers passed.\n");
+};
+
+
+void test_scan_tokens_keywords() {
+    char* source = "if and or for while self else elif return break continue class super fn";
+    Lexer lexer = {0, 0, 1, strlen(source), source};
+    Token* token = scan_tokens(&lexer);
+
+    assert(token != NULL);
+    assert(token->token_type == IF);
+    assert(strcmp(token->lexeme, "if") == 0);
+
+    while (token->next_token != NULL) {
+        assert(token->literal == NULL);
+        assert(token->line = 1);
+        token = token->next_token;
+    };
+
+    assert(token->token_type == FN);
+    assert(strcmp(token->lexeme, "fn") == 0);
+
+    free_tokens(token);
+    printf("test_scan_tokens_keywords passed.\n");
+};
+
+
 int test_lexer() {
     printf("\ntest_lexer started.\n");
     printf("Size of a token -> %lu bytes\n", sizeof(Token));
@@ -284,8 +320,10 @@ int test_lexer() {
 
     test_scan_tokens_string_single_quote();
     test_scan_tokens_string_double_quote();
-
     test_scan_tokens_numbers();
+
+    test_scan_tokens_identifiers();
+    test_scan_tokens_keywords();
 
     printf("test_lexer passed.\n");
 

@@ -54,9 +54,17 @@ Token* add_next_token(Lexer* lexer, TokenType token_type, void* literal) {
 };
 
 
+void scan_comment(Lexer* lexer) {
+    // Peek at next character, so new line is detected and comments are added to line count
+    while (peek_character(lexer) != '\n' && !is_finished(lexer)) {
+        next_character(lexer);
+    };
+};
+
+
 char* scan_string(Lexer* lexer, bool single) {
     uint64_t size = 0;
-    char* value = NULL;
+    char* literal = NULL;
     char quote = single ? '\'' : '"';
 
     while (!is_finished(lexer) && peek_character(lexer) != quote) {
@@ -74,18 +82,16 @@ char* scan_string(Lexer* lexer, bool single) {
     };
 
     next_character(lexer);
+    // -1 and +1 to ignore the quotes
     size = (lexer->current - 1) - (lexer->start + 1) + 1;
 
-    value = malloc(size);
-    if (value == NULL) {
-        oom();
-    };
+    literal = malloc(size);
+    memcheck(literal);
 
-    memset(value, '\0', size);
-    // +1 and -1 to ignore the quotes
-    strncpy(value, &(lexer->source[lexer->start + 1]), size - 1);
+    memset(literal, '\0', size);
+    strncpy(literal, &(lexer->source[lexer->start + 1]), --size);
 
-    return value;
+    return literal;
 };
 
 
@@ -93,7 +99,7 @@ double* scan_number(Lexer* lexer) {
     uint64_t size;
     char* string = NULL;
     char* remainder = NULL;
-    double* value = NULL;
+    double* literal = NULL;
 
 
     while (is_digit(peek_character(lexer))) {
@@ -107,24 +113,54 @@ double* scan_number(Lexer* lexer) {
         };
     };
 
+    if (peek_character(lexer) != ' ' && !is_finished(lexer)) {
+        // TODO: Raise error about invalid number
+    };
+
     size = lexer->current - lexer->start + 1;
     string = malloc(size);
-    if (string == NULL) {
-        oom();
-    };
+    memcheck(string);
 
     memset(string, '\0', size);
-    strncpy(string, &(lexer->source[lexer->start]), size - 1);
+    strncpy(string, &(lexer->source[lexer->start]), --size);
 
-    value = malloc(sizeof(double));
-    if (value == NULL) {
-        oom();
-    };
+    literal = malloc(sizeof(double));
+    memcheck(literal);
 
-    *value = strtod(string, &remainder);
+    *literal = strtod(string, &remainder);
     free(string);
 
-    return value;
+    return literal;
+};
+
+
+TokenType scan_identifier(Lexer* lexer) {
+    uint64_t size = 0;
+    char* lexeme = NULL;
+    struct hashmap* map = NULL;
+    const KeywordHash* hash = NULL;
+    TokenType token_type = IDENTIFIER;
+
+    while (is_alphanumeric(peek_character(lexer))) {
+        next_character(lexer);
+    };
+
+    size = lexer->current - lexer->start + 1;
+    lexeme = malloc(size);
+    memcheck(lexeme);
+
+    memset(lexeme, '\0', size);
+    strncpy(lexeme, &(lexer->source[lexer->start]), --size);
+
+    map = get_keyword_hashmap();
+    hash = hashmap_get(map, &(KeywordHash){.lexeme = lexeme});
+    token_type = hash ? hash->token_type : IDENTIFIER;
+
+    free(lexeme);
+    hash = NULL;
+    lexeme = NULL;
+
+    return token_type;
 };
 
 
@@ -141,10 +177,7 @@ Token* scan_token(Lexer* lexer) {
 
         case '/':
             if (match_character(lexer, '/')) {
-                // Peek at next character, so comments are added to line count
-                while (peek_character(lexer) != '\n' && !is_finished(lexer)) {
-                    next_character(lexer);
-                };
+                scan_comment(lexer);
                 return NULL;
 
             } else {
@@ -202,6 +235,8 @@ Token* scan_token(Lexer* lexer) {
             if (is_digit(character)) {
                 token_type = NUMBER;
                 literal = scan_number(lexer);
+            } else if (is_alpha(character)) {
+                token_type = scan_identifier(lexer);
             } else {
                 // TODO: Raise error
                 return NULL;
@@ -241,7 +276,7 @@ Token* scan_tokens(Lexer* lexer) {
 
 
 void reset_lexer(Lexer* lexer) {
-    memset(lexer, 0, sizeof *lexer);
+    memset(lexer, 0, sizeof(Lexer));
     lexer->line = 1;
     lexer->source = NULL;
 };

@@ -25,6 +25,7 @@ void print_usage(char* name) {
 void repl() {
     bool eol = true;
     char* fp = NULL;
+    bool newline = false;
     char buffer[REPL_BUFFER_SIZE] = {'\0'};
 
     Interpreter* interpreter = create_interpreter();
@@ -32,7 +33,10 @@ void repl() {
 
     do {
         if (eol) {
-            printf("> ");
+            if (newline) {
+                printf("\n");
+            };
+            printf(">>> ");
             reset_lexer(interpreter->lexer);
         };
 
@@ -42,7 +46,7 @@ void repl() {
             eol = true;
 
         } else {
-            run(interpreter, buffer, strlen(buffer));
+            newline = run(interpreter, buffer, strlen(buffer));
             eol = end_of_line(buffer);
         };
     } while (fp != NULL);

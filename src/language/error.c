@@ -16,6 +16,7 @@ const char* get_error_name(ErrorType kind) {
     return NULL;
 };
 
+
 char* format_error(Error* err) {
     char* text;
     const char* name = get_error_name(err->kind);

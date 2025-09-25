@@ -1,29 +1,33 @@
 #include "clipti.h"
 
 
-short int run(Interpreter* interpreter, char* source, uint64_t size) {
+bool run(Interpreter* interpreter, char* source, uint64_t size) {
     Token* token = NULL;
 
     size = strrssize(source, size);
     if (size == 0) {
-        return 0;
+        return false;
     };
 
     interpreter->lexer->source = source;
     interpreter->lexer->slen = size;
     token = scan_tokens(interpreter->lexer);
 
-    // Do stuff with parsed tokens
+    if (token == NULL) {
+        return false;
+    };
+
+    // TODO: Do stuff with parsed tokens
     Token* t = token;
     while (t != NULL) {
-        printf("%s", t->lexeme);
+        print_token(t);
+        printf(" ");
         t = t->next_token;
     };
 
-    printf("\n");
     free_tokens(token);
 
-    return 0;
+    return true;
 };
 
 

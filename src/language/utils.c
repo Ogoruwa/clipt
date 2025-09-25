@@ -21,6 +21,16 @@ bool is_digit(char c) {
 };
 
 
+bool is_alpha(char c) {
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+};
+
+
+bool is_alphanumeric(char c) {
+    return is_alpha(c) || is_digit(c);
+};
+
+
 /**
  * @brief Returns the size of a string with no trailing whitespace.
  *

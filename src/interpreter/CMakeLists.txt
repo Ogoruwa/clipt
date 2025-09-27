@@ -1,4 +1,7 @@
-project(CLInterpreter VERSION ${CLipt_VERSION})
+project(CLInterpreter
+    VERSION ${CLipt_VERSION}
+    DESCRIPTION "Interpreter for CLipt language"
+)
 
 
 # Targets

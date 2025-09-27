@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.31)
 
-project(CLipt VERSION 0.1.0)
+project(CLipt
+    VERSION 0.1.0
+    LANGUAGES C
+    DESCRIPTION "A simple scripting language, written in C"
+)
+
 
 # Variables
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -12,8 +17,16 @@ endif()
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/install")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}")
+
+if (WIN32)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+else()
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}")
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}")
+endif()
 
 option(BUILD_INTERPRETER "Build the interpreter" ON)
 option(ENABLE_CLANG_TIDY "Enable clang-tidy checks" OFF)
@@ -31,6 +44,8 @@ endif()
 
 
 # Targets
+add_subdirectory("src")
+
 add_subdirectory("src/language")
 
 if(BUILD_INTERPRETER)

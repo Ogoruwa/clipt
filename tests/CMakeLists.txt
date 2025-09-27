@@ -16,18 +16,16 @@ foreach(test ${sources})
     get_filename_component(testname ${test} NAME_WE)
     add_test(NAME ${testname} COMMAND TestSuite ${testname})
 
-    if (WIN32)
+    if (NOT WIN32)
         string(CONCAT env
             "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}\\;"
-            "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}\\;"
-            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\\;"
-            "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}\\;"
-            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY};"
-            "${CMAKE_LIBRARY_OUTPUT_DIRECTORY};"
+            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}\\;"
+            "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE};"
+            "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE};"
             "$ENV{PATH}"
         )
         set_tests_properties(${testname} PROPERTIES
-            # WORKING_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}"
+            WORKING_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
             ENVIRONMENT "PATH=${env}"
         )
     endif()

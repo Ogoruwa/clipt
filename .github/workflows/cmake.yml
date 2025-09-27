@@ -118,10 +118,7 @@ jobs:
         Get-ChildItem -Path "${{steps.strings.outputs.build-output-dir}}"
         Get-ChildItem -Recurse -Path "${{steps.strings.outputs.build-output-dir}}/bin"
         Get-ChildItem -Recurse -Path "${{steps.strings.outputs.build-output-dir}}/lib"
-        $Env:PATH += ";${{steps.strings.outputs.build-output-dir}}/lib/${{matrix.build_type}}"
-        $Env:PATH += ";${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}"
-        $Env:PATH += ";${{steps.strings.outputs.build-output-dir}}/lib/"
-        $Env:PATH += ";${{steps.strings.outputs.build-output-dir}}/bin"
+        "${{steps.strings.outputs.test-executable}} test_token"
         ctest --output-on-failure --build-config ${{matrix.build_type}}
 
     - name: Pack

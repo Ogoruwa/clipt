@@ -110,14 +110,15 @@ jobs:
       run: cmake --build ${{steps.strings.outputs.build-output-dir}} --config ${{matrix.build_type}}
 
     - name: Test
-      working-directory: ${{steps.strings.outputs.build-output-dir}}
+      working-directory: ${{steps.strings.outputs.build-output-dir}}/lib
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because
       # the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
-        Get-ChildItem -Directory -Path "${{steps.strings.outputs.build-output-dir}}"
-        Get-ChildItem -Recurse -Path "${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}"
-        Get-ChildItem -Recurse -Path "${{steps.strings.outputs.build-output-dir}}/lib/${{matrix.build_type}}"
+        Get-ChildItem -Path "${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}"
+        Get-ChildItem -Path "${{steps.strings.outputs.build-output-dir}}/lib/${{matrix.build_type}}"
+        $Env:PATH += ";${{steps.strings.outputs.build-output-dir}}/lib/${{matrix.build_type}}"
+        $Env:PATH += ";${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}"
         ctest --output-on-failure --build-config ${{matrix.build_type}}
 
     - name: Pack

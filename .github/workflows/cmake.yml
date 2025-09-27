@@ -115,9 +115,8 @@ jobs:
       # the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
-        Write-Host "Listing (${{matrix.build_type}}):"
-        Get-ChildItem -Recurse -Path "${{steps.strings.outputs.build-output-dir}}/bin"
-        Get-ChildItem -Recurse -Path "${{steps.strings.outputs.build-output-dir}}/lib"
+        Get-ChildItem -Recurse -Path "${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}"
+        Get-ChildItem -Recurse -Path "${{steps.strings.outputs.build-output-dir}}/lib/${{matrix.build_type}}"
         ctest --output-on-failure --build-config ${{matrix.build_type}}
 
     - name: Pack

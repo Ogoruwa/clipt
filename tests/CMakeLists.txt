@@ -19,9 +19,9 @@ foreach(test ${sources})
     if (WIN32)
         set_tests_properties(${testname} PROPERTIES
             ENVIRONMENT
-                "PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}\\;
-                    ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}\\;
-                    $ENV{PATH}"
+                "PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE};${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE};$ENV{PATH}"
         )
+        get_test_property(${testname} ENVIRONMENT env)
+        message("env: ${env}")
     endif()
 endforeach()

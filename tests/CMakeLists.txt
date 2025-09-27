@@ -17,6 +17,6 @@ foreach(test ${sources})
     add_test(NAME ${testname} COMMAND TestSuite ${testname})
 
     if (WIN32)
-        set_tests_properties(${testname} PROPERTIES ENVIRONMENT "PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\\;$ENV{PATH}")
+        set_tests_properties(${testname} PROPERTIES ENVIRONMENT "PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\\${CMAKE_BUILD_TYPE};$ENV{PATH}")
     endif()
 endforeach()

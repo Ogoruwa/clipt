@@ -118,9 +118,9 @@ jobs:
         Write-Host "PATH: $Env:PATH"
         Write-Host "Github Env: ${{github.env}}"
         Write-Host "Listing:"
-        Get-ChildItem -Recurse -Directory -Path "${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}"
-        $Env:PATH += ";${{steps.strings.outputs.build-output-dir}}/lib/${{matrix.build_type}}"
-        $Env:PATH += ";${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}"
+        Get-ChildItem -Recurse -Directory -Path "${{steps.strings.outputs.build-output-dir}}\bin\${{matrix.build_type}}"
+        $Env:PATH += ";${{steps.strings.outputs.build-output-dir}}\lib\${{matrix.build_type}}"
+        $Env:PATH += ";${{steps.strings.outputs.build-output-dir}}\bin\${{matrix.build_type}}"
         ctest --output-on-failure --build-config ${{matrix.build_type}}
 
     - name: Pack

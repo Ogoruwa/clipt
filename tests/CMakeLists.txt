@@ -18,5 +18,6 @@ foreach(test ${sources})
 
     if (WIN32)
         set_tests_properties(${testname} PROPERTIES ENVIRONMENT "PATH=${CMAKE_BINARY_DIR}/lib\\;$ENV{PATH}")
+        message(STATUS "PATH: $ENV{PATH}")
     endif()
 endforeach()

@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.31)
 
-project(CLipt VERSION 0.1.0)
+project(CLipt
+    VERSION 0.1.0
+    LANGUAGES C
+    DESCRIPTION "A simple scripting language, written in C"
+)
+
 
 # Variables
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -10,7 +15,6 @@ if(WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif()
 
-set(LANGUAGE C)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/install")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}")

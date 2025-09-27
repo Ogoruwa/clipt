@@ -270,22 +270,49 @@ void test_scan_tokens_numbers() {
 
 
 void test_scan_tokens_identifiers() {
-    char* source = "var1 _no2 _3 06 9r";
+    const char* source = "var1 _no2 _3 06 9r";
     Lexer lexer = {0, 0, 1, strlen(source), source};
     Token* token = scan_tokens(&lexer);
+    Token* t = token;
+    double* temp_n = malloc(sizeof(double));
 
     assert(token->token_type == IDENTIFIER);
     assert(strcmp(token->lexeme, "var1") == 0);
 
-    free_tokens(token);
+    token = token->next_token;
+    assert(token != NULL);
+    assert(tokencmp(token, &(Token){"_no2", IDENTIFIER, 1, NULL}));
+
+    token = token->next_token;
+    assert(token != NULL);
+    assert(tokencmp(token, &(Token){"_3", IDENTIFIER, 1, NULL}));
+
+    token = token->next_token;
+    *temp_n = 6;
+    assert(token != NULL);
+    assert(tokencmp(token, &(Token){"06", NUMBER, 1, temp_n}));
+
+    token = token->next_token;
+    *temp_n = 9;
+    assert(token != NULL);
+    assert(tokencmp(token, &(Token){"9", NUMBER, 1, temp_n}));
+
+    token = token->next_token;
+    assert(token != NULL);
+    assert(tokencmp(token, &(Token){"r", IDENTIFIER, 1, NULL}));
+    assert(token->next_token == NULL);
+
+    free(temp_n);
+    free_tokens(t);
     printf("test_scan_tokens_identifiers passed.\n");
 };
 
 
 void test_scan_tokens_keywords() {
-    char* source = "if and or for while self else elif return break continue class super fn";
+    const char* source = "if and or for while self else elif return break continue class super fn";
     Lexer lexer = {0, 0, 1, strlen(source), source};
     Token* token = scan_tokens(&lexer);
+    Token* t = token;
 
     assert(token != NULL);
     assert(token->token_type == IF);
@@ -293,14 +320,14 @@ void test_scan_tokens_keywords() {
 
     while (token->next_token != NULL) {
         assert(token->literal == NULL);
-        assert(token->line = 1);
+        assert(token->line == 1);
         token = token->next_token;
     };
 
     assert(token->token_type == FN);
     assert(strcmp(token->lexeme, "fn") == 0);
 
-    free_tokens(token);
+    free_tokens(t);
     printf("test_scan_tokens_keywords passed.\n");
 };
 

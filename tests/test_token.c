@@ -61,13 +61,17 @@ void test_token_memory() {
     char* temp_s = "'TEST'";
 
     for (short i = 1; i < 255; i++) {
-        char* literal = calloc(sizeof(char), strlen(temp_s) - 1);
-        strncpy(literal, &(temp_s[1]), strlen(temp_s) - 1);
+        // length - 2 for the quotes, + 1 for the null terminator
+        char* literal = calloc(strlen(temp_s) - 1, sizeof(char));
+
+        memcheck(literal);
+        strncpy(literal, &(temp_s[1]), strlen(temp_s) - 2);
 
         token = create_token(STRING, temp_s, strlen(temp_s), literal, i);
 
         assert(tokencmp(token, &(Token){"'TEST'", STRING, i - 1, literal}));
         free_tokens(token);
+        literal = NULL;
     };
 
     token = NULL;

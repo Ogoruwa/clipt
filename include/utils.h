@@ -1,8 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
-#define memcheck(ptr)  \
-    if (ptr == NULL) { \
-        oom();         \
+#define memcheck(ptr)    \
+    if ((ptr) == NULL) { \
+        oom();           \
     }
 
 #include <stdbool.h>

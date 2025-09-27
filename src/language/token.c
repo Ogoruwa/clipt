@@ -116,7 +116,7 @@ void free_tokens(Token* token) {
 
 
 void print_token(Token* token) {
-    char* info = "";
+    char* info;
     const char* token_name = get_token_type_name(token->token_type);
     assert(token_name != NULL);
 
@@ -129,7 +129,7 @@ void print_token(Token* token) {
         info = malloc(size++);
 
         memset(info, '\0', size);
-        snprintf(info, size, "%f", value);
+        (void)snprintf(info, size, "%f", value);
 
     } else {
         printf("%s", token_name);

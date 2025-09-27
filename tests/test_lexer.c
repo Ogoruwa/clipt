@@ -334,7 +334,7 @@ void test_scan_tokens_keywords() {
 
 int test_lexer() {
     printf("\ntest_lexer started.\n");
-    printf("Size of a token -> %lu bytes\n", sizeof(Token));
+    printf("Size of a token -> %zu bytes\n", sizeof(Token));
 
     test_scan_tokens_empty_source();
     test_scan_tokens_single_character();

@@ -10,6 +10,7 @@ if(WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif()
 
+set(LANGUAGE C)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/install")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}")
@@ -31,6 +32,8 @@ endif()
 
 
 # Targets
+add_subdirectory("src")
+
 add_subdirectory("src/language")
 
 if(BUILD_INTERPRETER)

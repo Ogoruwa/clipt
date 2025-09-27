@@ -15,22 +15,16 @@ target_link_libraries(TestSuite PRIVATE Lang)
 foreach(test ${sources})
     get_filename_component(testname ${test} NAME_WE)
     add_test(NAME ${testname} COMMAND TestSuite ${testname})
-    set(TEMP TRUE)
 
     if (WIN32)
+        string(CONCAT env
+            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE};"
+            "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE};"
+            "$ENV{PATH}"
+        )
         set_tests_properties(${testname} PROPERTIES
             WORKING_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}"
-            ENVIRONMENT
-                "PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE};\"
-                ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE};\
-                $ENV{PATH}"
+            ENVIRONMENT "PATH=${env}"
         )
-        if (TEMP)
-            get_test_property(${testname} ENVIRONMENT env)
-            get_test_property(${testname} WORKING_DIRECTORY dir)
-            message("Directory: ${dir}")
-            message("env: ${env}")
-            set(TEMP FALSE)
-        endif()
     endif()
 endforeach()

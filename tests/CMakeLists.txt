@@ -18,12 +18,16 @@ foreach(test ${sources})
 
     if (WIN32)
         string(CONCAT env
-            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE};"
-            "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE};"
+            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}\\;"
+            "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}\\;"
+            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\\;"
+            "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}\\;"
+            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY};"
+            "${CMAKE_LIBRARY_OUTPUT_DIRECTORY};"
             "$ENV{PATH}"
         )
         set_tests_properties(${testname} PROPERTIES
-            WORKING_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}"
+            # WORKING_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}"
             ENVIRONMENT "PATH=${env}"
         )
     endif()

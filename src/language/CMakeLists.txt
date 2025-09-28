@@ -1,6 +1,7 @@
 # Targets
 add_library(Lang SHARED token.c lexer.c utils.c error.c)
 
+add_dependencies(Lang Hashmap)
 
 
 # Properties

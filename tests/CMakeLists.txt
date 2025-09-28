@@ -16,9 +16,15 @@ foreach(test ${sources})
     get_filename_component(testname ${test} NAME_WE)
     add_test(NAME ${testname} COMMAND TestSuite ${testname})
 
-    if (WIN32)
+    if (MSVC)
+        string(CONCAT TEMP
+            "PATH=C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/\
+            ${CMAKE_VS_PLATFORM_TOOLSET_VERSION}/bin/HostX64/${CMAKE_LIBRARY_ARCHITECTURE};\
+            $ENV{PATH}
+        ")
         set_tests_properties(${testname} PROPERTIES
-            ENVIRONMENT "PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}\\;${CMAKE_LIBRARY_OUTPUT_DIRECTORY};$ENV{PATH}"
+            ENVIRONMENT ${TEMP}
         )
+        message("\n\nPath is ${TEMP}\n")
     endif()
 endforeach()

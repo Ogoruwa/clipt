@@ -7,9 +7,11 @@ project(CLInterpreter
 # Targets
 set(sources clipti.c)
 add_library(Interpreter STATIC ${sources})
+add_dependencies(Interpreter Lang)
 
 set(sources repl.c)
 add_executable(REPL ${sources})
+add_dependencies(REPL Interpreter)
 
 
 # Properties

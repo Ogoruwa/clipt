@@ -3,8 +3,15 @@ cmake_minimum_required(VERSION 3.31)
 project(CLipt
     VERSION 0.1.0
     LANGUAGES C
-    DESCRIPTION "A simple scripting language, written in C"
+    DESCRIPTION "A simple scripting Language, written in C"
 )
+
+
+# Options
+option(BUILD_INTERPRETER "Build the interpreter" ON)
+option(CLANG_TIDY_WARNINGS_AS_ERRORS "Make cLang tidy warnings errors" OFF)
+option(ENABLE_ASAN "Enable address sanitizer" OFF)
+option(ENABLE_CLANG_TIDY "Enable cLang-tidy checks" OFF)
 
 
 # Variables
@@ -25,12 +32,6 @@ else()
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}")
 endif()
 
-
-option(BUILD_INTERPRETER "Build the interpreter" ON)
-option(ENABLE_CLANG_TIDY "Enable clang-tidy checks" OFF)
-option(CLANG_TIDY_WARNINGS_AS_ERRORS "Make clang tidy warnings errors" OFF)
-
-
 if(ENABLE_CLANG_TIDY)
     find_program(CLANG_TIDY NAMES clang-tidy REQUIRED)
     set(CMAKE_C_CLANG_TIDY "${CLANG_TIDY};--checks=.clang-tidy;-p=build")
@@ -42,8 +43,6 @@ endif()
 
 
 # Targets
-include (InstallRequiredSystemLibraries)
-
 add_subdirectory("src")
 
 add_subdirectory("src/language")
@@ -51,6 +50,26 @@ add_subdirectory("src/language")
 if(BUILD_INTERPRETER)
     add_subdirectory("src/interpreter")
 endif()
+
+
+# Compiler options
+if (MSVC)
+    target_compile_options(Lang PUBLIC /W4 PUBLIC /WX PUBLIC /permissive-)
+
+    if (ENABLE_ASAN AND (CMAKE_BUILD_TYPE MATCHES Debug))
+        target_compile_options(Lang PUBLIC /fsanitize=address,undefined PUBLIC /fsanitize=undefined PUBLIC /Zi)
+        target_link_options(Lang PUBLIC /DEBUG)
+    endif()
+
+else()
+    target_compile_options(Lang PUBLIC -g PUBLIC -free PUBLIC -Wall)
+
+    if (ENABLE_ASAN AND (CMAKE_BUILD_TYPE MATCHES Debug))
+        target_compile_options(Lang PUBLIC -fsanitize=address,undefined PUBLIC -fno-omit-frame-pointer)
+        target_link_options(Lang PUBLIC -fsanitize=address,undefined)
+    endif()
+endif()
+
 
 
 # Testing

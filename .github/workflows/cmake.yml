@@ -115,16 +115,15 @@ jobs:
 
     - name: Test
       id: test
-      continue-on-error: true
       working-directory: ${{steps.strings.outputs.build-output-dir}}
 
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because
       # the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
-        "${{steps.strings.outputs.test-executable}} test_lexer"
-        "${{steps.strings.outputs.test-executable}} test_token"
-        "${{steps.strings.outputs.test-executable}} test_error"
+        "${{steps.strings.outputs.test-executable}}.exe test_lexer"
+        "${{steps.strings.outputs.test-executable}}.exe test_token"
+        "${{steps.strings.outputs.test-executable}}.exe test_error"
         ctest --output-on-failure --build-config ${{matrix.build_type}}
 
 
@@ -164,16 +163,17 @@ jobs:
       working-directory: ${{steps.strings.outputs.build-output-dir}}
       if: runner.os == 'Linux'
       run: |
-        valgrind --leak-check=full --show-leak-kinds=all -s ctest
+        valgrind --leak-check=full --show-leak-kinds=all -s ctest --build-config ${{matrix.build_type}}
 
     - name: Run memory leak tests (MacOS)
       working-directory: ${{steps.strings.outputs.build-output-dir}}
       if: runner.os == 'macOS'
       run: |
-        MallocStackLogging=1 leaks -atExit -- ctest
+        MallocStackLogging=1 leaks -atExit -- ctest --build-config ${{matrix.build_type}}
 
     - name: Run memory leak tests (Windows)
       working-directory: ${{steps.strings.outputs.build-output-dir}}
       if: runner.os == 'Windows'
       run: |
-        drmemory -leak_check -ignore_kernel -batch -results_to_stdout -- ctest
+        refreshenv
+        drmemory -leak_check -ignore_kernel -batch -results_to_stdout -- ctest --build-config ${{matrix.build_type}}

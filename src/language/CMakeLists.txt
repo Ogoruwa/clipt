@@ -19,7 +19,7 @@ target_link_libraries(Lang PUBLIC Hashmap)
 
 # Install
 install(TARGETS Lang
-    RUNTIME DESTINATION bin
+    RUNTIME DESTINATION lib
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
 )

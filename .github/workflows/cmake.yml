@@ -92,7 +92,9 @@ jobs:
       run: |
         echo "PATH=C:\Program Files\LLVM\bin;${PATH}" >> $GITHUB_ENV
 
+
     - name: Configure CMake
+      id: configure
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required
       # if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
@@ -105,12 +107,14 @@ jobs:
 
 
     - name: Build
+      id: build
       # Build your program with the given configuration. Note that --config is needed because
       # the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{steps.strings.outputs.build-output-dir}} --config ${{matrix.build_type}}
 
 
     - name: Test
+      id: test
       continue-on-error: true
       working-directory: ${{steps.strings.outputs.build-output-dir}}
 
@@ -118,16 +122,20 @@ jobs:
       # the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
+        "${{steps.strings.outputs.test-executable}} test_lexer"
+        "${{steps.strings.outputs.test-executable}} test_token"
+        "${{steps.strings.outputs.test-executable}} test_error"
         ctest --output-on-failure --build-config ${{matrix.build_type}}
 
 
     - name: Pack
+      id: pack
       working-directory: ${{steps.strings.outputs.build-output-dir}}
       run: cpack -C ${{matrix.build_type}}
 
 
     - name: Debug build output
-      if: failure()
+      if: ${{ steps.pack.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure' }}
       working-directory: ${{steps.strings.outputs.build-output-dir}}
       run: |
         ls

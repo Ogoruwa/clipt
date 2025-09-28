@@ -109,31 +109,30 @@ jobs:
       # the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{steps.strings.outputs.build-output-dir}} --config ${{matrix.build_type}}
 
-    - name: Debug info
-      working-directory: ${{steps.strings.outputs.build-output-dir}}
-      run: |
-        Get-ChildItem -Path "${{steps.strings.outputs.build-output-dir}}"
-        Get-ChildItem -Recurse -Path "${{steps.strings.outputs.build-output-dir}}/bin"
-        Get-ChildItem -Recurse -Path "${{steps.strings.outputs.build-output-dir}}/lib"
-
-        echo "\n\nCPack Source: "
-        cat ${{steps.strings.outputs.build-output-dir}}/CPackSourceConfig.cmake
-
-        echo "\n\nCPack Config: "
-        cat ${{steps.strings.outputs.build-output-dir}}/CPackConfig.cmake
 
     - name: Test
       working-directory: ${{steps.strings.outputs.build-output-dir}}
+
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because
       # the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
-        "${{steps.strings.outputs.test-executable}}.exe test_token"
-      #  ctest --output-on-failure --build-config ${{matrix.build_type}}
+        ctest --output-on-failure -C ${{matrix.build_type}}
+
 
     - name: Pack
       working-directory: ${{steps.strings.outputs.build-output-dir}}
-      run: cpack
+      run: cpack -C ${{matrix.build_type}}
+
+
+    - name: Debug build output
+      if: failure()
+      working-directory: ${{steps.strings.outputs.build-output-dir}}
+      run: |
+        ls
+        ls -R "bin"
+        ls -R "lib"
+        ls -R "Packaging"
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
@@ -145,7 +144,7 @@ jobs:
 
 
     # Run memory leak tests
-    - name: Install Valgrind or DrMemory
+    - name: Install Valgrind (Linux) or DrMemory (Windows)
       uses: ConorMacBride/install-package@v1
       with:
         apt: valgrind

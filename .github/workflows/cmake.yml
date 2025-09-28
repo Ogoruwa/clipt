@@ -72,6 +72,7 @@ jobs:
         echo "artifact-name=CLipt-${{matrix.os}}-${{matrix.c_compiler}}-${{matrix.build_type}}" >> "$GITHUB_OUTPUT"
         echo "test-executable=${{github.workspace}}/build/bin/${{matrix.build_type}}/test_suite" >> "$GITHUB_OUTPUT"
         echo "repl-executable=${{github.workspace}}/build/bin/${{matrix.build_type}}/clipti" >> "$GITHUB_OUTPUT"
+        mkdir -p "${{github.workspace}}/build/logs"
 
 
     # Install clang tidy
@@ -117,20 +118,19 @@ jobs:
       # the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
-        echo "\nTESTING\n"
-        ${{steps.strings.outputs.test-executable}}.exe "test_lexer"
-        echo "\n------------\n"
         ctest --verbose --output-on-failure --build-config ${{matrix.build_type}}
 
 
     - name: Pack
       id: pack
       working-directory: ${{steps.strings.outputs.build-output-dir}}
-      run: cpack -C ${{matrix.build_type}}
+      run: |
+        cpack -C ${{matrix.build_type}}
+        echo "Outcome: ${{steps.pack.outcome}}"
 
 
     - name: Debug build output
-      if: ${{ (steps.pack.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure') }}
+      if: ${{ steps.pack.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure' }}
       working-directory: ${{steps.strings.outputs.build-output-dir}}
       run: |
         ls

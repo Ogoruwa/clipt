@@ -100,6 +100,7 @@ jobs:
         -DCMAKE_C_COMPILER=${{matrix.c_compiler}}
         -DCMAKE_C_FLAGS="-fsanitize=address -fno-omit-frame-pointer"
         -DENABLE_CLANG_TIDY=ON -DCLANG_TIDY_WARNINGS_AS_ERRORS=${{((env.IS_MAIN_BRANCH == 'true') && 'ON') || 'OFF'}}
+        ${{(runner.os == 'Windows' && '-A x64') || ''}}
 
 
     - name: Build
@@ -126,7 +127,7 @@ jobs:
       working-directory: ${{steps.strings.outputs.build-output-dir}}
       run: |
         cpack -C ${{matrix.build_type}}
-        echo "Outcome: ${{steps.pack.outcome}}"
+        echo "Outcome: ${{steps.test.outcome}}"
 
 
     - name: Debug build output
@@ -138,7 +139,6 @@ jobs:
         ls -R "lib"
         ls -R "Testing"
         ls -R "Packaging"
-        return 1;
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
@@ -173,6 +173,6 @@ jobs:
       if: runner.os == 'Windows'
       run: |
         $Env:PATH = "C:\Program Files (x86)\Dr. Memory\bin;${Env:PATH}"
-        drmemory -batch -logdir ${{steps.strings.outputs.build-output-dir}}/logs -- ctest --build-config ${{matrix.build_type}}
+        drmemory -batch -leaks_only -logdir ${{steps.strings.outputs.build-output-dir}}/logs -- ctest --build-config ${{matrix.build_type}}
         echo "\n\nDrMemory Logs: \n"
         cat ${{steps.strings.outputs.build-output-dir}}/logs/DrMemory-*

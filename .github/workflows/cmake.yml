@@ -87,11 +87,6 @@ jobs:
       run: |
         echo "PATH=$(brew --prefix llvm)/bin:${PATH}" >> $GITHUB_ENV
 
-    - name: Setup path to clang-tidy (Windows)
-      if: runner.os == 'Windows'
-      run: |
-        echo "PATH=C:\Program Files\LLVM\bin;${PATH}" >> $GITHUB_ENV
-
 
     - name: Configure CMake
       id: configure
@@ -122,9 +117,10 @@ jobs:
       # the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
-        "${{steps.strings.outputs.test-executable}}.exe test_lexer"
-        "${{steps.strings.outputs.test-executable}}.exe test_token"
-        "${{steps.strings.outputs.test-executable}}.exe test_error"
+        ls -l "${{steps.strings.outputs.test-executable}}.exe"
+        "${{steps.strings.outputs.test-executable}}.exe" "test_lexer"
+        "${{steps.strings.outputs.test-executable}}.exe" "test_token"
+        "${{steps.strings.outputs.test-executable}}.exe" "test_error"
         ctest --output-on-failure --build-config ${{matrix.build_type}}
 
 
@@ -135,7 +131,7 @@ jobs:
 
 
     - name: Debug build output
-      if: ${{ failure() && (steps.pack.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure') }}
+      if: ${{ (steps.pack.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure') }}
       working-directory: ${{steps.strings.outputs.build-output-dir}}
       run: |
         ls
@@ -177,5 +173,6 @@ jobs:
       working-directory: ${{steps.strings.outputs.build-output-dir}}
       if: runner.os == 'Windows'
       run: |
+        echo "PATH=C:\Program Files (x86)\Dr. Memory\bin;${PATH}" >> $GITHUB_ENV
         refreshenv
         drmemory -leak_check -ignore_kernel -batch -results_to_stdout -- ctest --build-config ${{matrix.build_type}}

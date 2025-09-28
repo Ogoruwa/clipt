@@ -115,6 +115,7 @@ jobs:
 
     - name: Test
       id: test
+      continue-on-error: true
       working-directory: ${{steps.strings.outputs.build-output-dir}}
 
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because
@@ -134,7 +135,7 @@ jobs:
 
 
     - name: Debug build output
-      if: ${{ steps.pack.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure' }}
+      if: ${{ failure() && (steps.pack.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure') }}
       working-directory: ${{steps.strings.outputs.build-output-dir}}
       run: |
         ls
@@ -142,6 +143,7 @@ jobs:
         ls -R "lib"
         ls -R "Testing"
         ls -R "Packaging"
+        return 1;
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4

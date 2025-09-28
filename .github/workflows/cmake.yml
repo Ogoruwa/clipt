@@ -121,7 +121,7 @@ jobs:
         ${{steps.strings.outputs.test-executable}}.exe "test_lexer"
         ${{steps.strings.outputs.test-executable}}.exe "test_token"
         ${{steps.strings.outputs.test-executable}}.exe "test_error"
-        ctest --output-on-failure --build-config ${{matrix.build_type}}
+        ctest --verbose --output-on-failure --build-config ${{matrix.build_type}}
 
 
     - name: Pack
@@ -173,5 +173,5 @@ jobs:
       working-directory: ${{steps.strings.outputs.build-output-dir}}
       if: runner.os == 'Windows'
       run: |
-        echo "PATH=C:\Program Files (x86)\Dr. Memory\bin;${PATH}" >> $GITHUB_ENV
+        $Env:PATH = "C:\Program Files (x86)\Dr. Memory\bin;${Env:PATH}"
         drmemory -leak_check -ignore_kernel -batch -results_to_stdout -- ctest --build-config ${{matrix.build_type}}

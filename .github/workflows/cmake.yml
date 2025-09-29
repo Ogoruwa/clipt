@@ -81,7 +81,7 @@ jobs:
       if: runner.os == 'Windows'
       run: |
         mkdir -p "${{steps.strings.outputs.build-output-dir}}/logs/DrMemory"
-        echo "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/" >> $GITHUB_PATH
+        echo "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/" >> $env:GITHUB_PATH
         ls "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64"
 
 
@@ -125,16 +125,10 @@ jobs:
       if: runner.os == 'Windows'
       continue-on-error: true
       run: |
-        Start-Process -FilePath ${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}/cliptr.exe -RedirectStandardOutput testo -RedirectStandardError teste
-        echo "\nOutput: "
-        cat ./testo
-        echo "\n______________________________________\n"
-        echo "\Error: "
-        cat ./teste
-        echo "\n______________________________________\n"
-        dumpbin ${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}/*.exe
-        dumpbin ${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}/*.dll
-        dumpbin ${{steps.strings.outputs.build-output-dir}}/lib/${{matrix.build_type}}/*.dll
+        $output = & ${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}/cliptr.exe 2>&1
+        echo "=== STDOUT+STDERR ==="
+        echo $output
+        dumpbin /dependents ${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}/cliptr.exe
 
 
     - name: Test
@@ -159,6 +153,7 @@ jobs:
       if: ${{ always() && (steps.pack.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure') }}
       working-directory: ${{steps.strings.outputs.build-output-dir}}
       run: |
+        echo -e "\nPath: ${{runner.os == 'Windows' && '$env:PATH' || '$PATH'}}\n"
         ls
         ls -R "bin"
         ls -R "lib"
@@ -167,6 +162,7 @@ jobs:
 
 
     - name: Upload build artifacts
+      if: ${{ always() && steps.build.outcome == 'success' }}
       uses: actions/upload-artifact@v4
       with:
         name: ${{steps.strings.outputs.artifact-name}}
@@ -198,7 +194,7 @@ jobs:
       working-directory: ${{steps.strings.outputs.build-output-dir}}
       if: runner.os == 'Windows'
       run: |
-        $Env:PATH = "C:\Program Files (x86)\Dr. Memory\bin;${Env:PATH}"
+        $env:PATH = "C:\Program Files (x86)\Dr. Memory\bin;${env:PATH}"
         drmemory -batch -leaks_only -logdir ${{steps.strings.outputs.build-output-dir}}/logs -- ctest --build-config ${{matrix.build_type}}
         echo "\n\nDrMemory Logs: \n"
         cat ${{steps.strings.outputs.build-output-dir}}/logs/DrMemory/DrMemory-*

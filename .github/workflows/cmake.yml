@@ -81,14 +81,14 @@ jobs:
       if: runner.os == 'Windows'
       run: |
         mkdir -p "${{steps.strings.outputs.build-output-dir}}/logs/DrMemory"
-        echo "PATH=C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/;${Env:PATH}" >> $GITHUB_ENV
+        echo "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/" >> $GITHUB_PATH
         ls "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64"
 
 
     - name: Extra setup (MacOS)
       if: runner.os == 'macOS'
       run: |
-        echo "PATH=$(brew --prefix llvm)/bin:${PATH}" >> $GITHUB_ENV
+        echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
 
 
     # Install clang tidy
@@ -125,7 +125,10 @@ jobs:
       if: runner.os == 'Windows'
       continue-on-error: true
       run: |
-        & ${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}/cliptr.exe
+        Start-Process -FilePath ${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}/cliptr.exe -RedirectStandardOutput test -RedirectStandardError test
+        echo "\nOutput: "
+        cat ./test
+        echo "\n______________________________________\n"
         dumpbin ${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}/*.exe
         dumpbin ${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}/*.dll
         dumpbin ${{steps.strings.outputs.build-output-dir}}/lib/${{matrix.build_type}}/*.dll
@@ -149,7 +152,7 @@ jobs:
         cpack -C ${{matrix.build_type}}
 
 
-    - name: Debug build output
+    - name: Debug build directory
       if: ${{ always() && (steps.pack.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure') }}
       working-directory: ${{steps.strings.outputs.build-output-dir}}
       run: |

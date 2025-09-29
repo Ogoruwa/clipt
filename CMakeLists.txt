@@ -54,7 +54,7 @@ endif()
 
 # Compiler options
 if (MSVC)
-    target_compile_options(Lang PUBLIC /W4 PUBLIC /permissive-)
+    target_compile_options(Lang PUBLIC /permissive-)
 
     if (CLANG_TIDY_WARNINGS_AS_ERRORS)
         target_compile_options(Lang PUBLIC /WX)

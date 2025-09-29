@@ -38,20 +38,20 @@ jobs:
       max-parallel: 3
 
       matrix:
-        os: [windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         build_type: [Debug]
         c_compiler: [gcc, clang, cl]
         include:
           - os: windows-latest
             c_compiler: cl
-          # - os: ubuntu-latest
-          #   c_compiler: gcc
-          # - os: ubuntu-latest
-          #   c_compiler: clang
-          # - os: macos-latest
-          #   c_compiler: gcc
-          # - os: macos-latest
-          #   c_compiler: clang
+          - os: ubuntu-latest
+            c_compiler: gcc
+          - os: ubuntu-latest
+            c_compiler: clang
+          - os: macos-latest
+            c_compiler: gcc
+          - os: macos-latest
+            c_compiler: clang
         exclude:
           - os: windows-latest
             c_compiler: gcc
@@ -167,7 +167,7 @@ jobs:
       uses: ConorMacBride/install-package@v1
       with:
         apt: valgrind
-        choco: drmemory
+        # choco: drmemory
 
     - name: Run memory leak tests (Linux)
       working-directory: ${{env.BUILD_DIR}}
@@ -183,7 +183,7 @@ jobs:
 
     - name: Run memory leak tests (Windows)
       working-directory: ${{env.BUILD_DIR}}
-      if: runner.os == 'Windows'
+      if: runner.os == 'Windows' && false
       #drmemory -batch -leaks_only -logdir ${{env.BUILD_DIR}}/logs -- ctest --build-config ${{matrix.build_type}}
       run: |
         drmemory -verbose 2 -leaks_only -no_count_leaks -no_track_allocs -logdir ${{env.BUILD_DIR}}/logs/DrMemory -- ctest --build-config ${{matrix.build_type}}

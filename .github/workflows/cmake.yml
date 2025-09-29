@@ -125,9 +125,12 @@ jobs:
       if: runner.os == 'Windows'
       continue-on-error: true
       run: |
-        Start-Process -FilePath ${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}/cliptr.exe -RedirectStandardOutput test -RedirectStandardError test
+        Start-Process -FilePath ${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}/cliptr.exe -RedirectStandardOutput testo -RedirectStandardError teste
         echo "\nOutput: "
-        cat ./test
+        cat ./testo
+        echo "\n______________________________________\n"
+        echo "\Error: "
+        cat ./teste
         echo "\n______________________________________\n"
         dumpbin ${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}/*.exe
         dumpbin ${{steps.strings.outputs.build-output-dir}}/bin/${{matrix.build_type}}/*.dll

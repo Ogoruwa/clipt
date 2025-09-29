@@ -83,11 +83,13 @@ jobs:
 
 
     - name: Extra setup (Windows)
-      # Visual Studio folder added to path so executables can find debug dlls
+      # Visual Studio folder added to path so executables can find clang_rt.asan dll
+      # Windows kits folder added to path so executables can find ucrt dll
       if: runner.os == 'Windows'
       run: |
-        ls -R "C:\Program Files (x86)\Windows Kits\10\bin"
         mkdir -p "${{env.BUILD_DIR}}/logs/DrMemory" > $null
+        echo "C:\Program Files (x86)\Dr. Memory\bin" >> $env:GITHUB_PATH
+        echo "C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\ucrt" >> $env:GITHUB_PATH
         echo "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64" >> $env:GITHUB_PATH
 
 
@@ -183,7 +185,6 @@ jobs:
       working-directory: ${{env.BUILD_DIR}}
       if: runner.os == 'Windows'
       run: |
-        $env:PATH = "C:\Program Files (x86)\Dr. Memory\bin;${env:PATH}"
         drmemory -batch -leaks_only -logdir ${{env.BUILD_DIR}}/logs -- ctest --build-config ${{matrix.build_type}}
         echo "\n\nDrMemory Logs: \n"
         cat ${{env.BUILD_DIR}}/logs/DrMemory/DrMemory-*

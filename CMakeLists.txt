@@ -54,17 +54,25 @@ endif()
 
 # Compiler options
 if (MSVC)
-    target_compile_options(Lang PUBLIC /W4 PUBLIC /WX PUBLIC /permissive-)
+    target_compile_options(Lang PUBLIC /W4 PUBLIC /permissive-)
 
-    if (ENABLE_ASAN AND (CMAKE_BUILD_TYPE MATCHES Debug))
-        target_compile_options(Lang PUBLIC /fsanitize=address,undefined PUBLIC /fsanitize=undefined PUBLIC /Zi)
+    if (CLANG_TIDY_WARNINGS_AS_ERRORS)
+        target_compile_options(Lang PUBLIC /WX)
+        target_link_options(Lang PUBLIC /WX)
+    endif()
+
+    if (CMAKE_BUILD_TYPE MATCHES "Debug")
         target_link_options(Lang PUBLIC /DEBUG)
+
+        if (ENABLE_ASAN)
+            target_compile_options(Lang PUBLIC /fsanitize=address)
+        endif()
     endif()
 
 else()
     target_compile_options(Lang PUBLIC -g PUBLIC -free PUBLIC -Wall)
 
-    if (ENABLE_ASAN AND (CMAKE_BUILD_TYPE MATCHES Debug))
+    if (ENABLE_ASAN AND (CMAKE_BUILD_TYPE MATCHES "Debug"))
         target_compile_options(Lang PUBLIC -fsanitize=address,undefined PUBLIC -fno-omit-frame-pointer)
         target_link_options(Lang PUBLIC -fsanitize=address,undefined)
     endif()

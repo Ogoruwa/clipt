@@ -17,14 +17,12 @@ foreach(test ${sources})
     add_test(NAME ${testname} COMMAND TestSuite ${testname})
 
     if (MSVC)
-        string(CONCAT TEMP
-            "PATH=C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/\
-            ${CMAKE_VS_PLATFORM_TOOLSET_VERSION}/bin/HostX64/${CMAKE_LIBRARY_ARCHITECTURE};\
-            $ENV{PATH}
-        ")
-        set_tests_properties(${testname} PROPERTIES
-            ENVIRONMENT ${TEMP}
+        string(CONCAT PATH
+            "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/"
+            "${CMAKE_VS_PLATFORM_TOOLSET_VERSION}/bin/HostX64/${CMAKE_LIBRARY_ARCHITECTURE};"
+            "$ENV{PATH}"
         )
-        message("\n\nPath is ${TEMP}\n")
+        set_tests_properties(${testname} PROPERTIES ENVIRONMENT "PATH=${PATH}")
+        message("\n\nPath is ${PATH}\n")
     endif()
 endforeach()

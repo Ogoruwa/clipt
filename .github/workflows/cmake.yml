@@ -184,7 +184,8 @@ jobs:
     - name: Run memory leak tests (Windows)
       working-directory: ${{env.BUILD_DIR}}
       if: runner.os == 'Windows'
+      #drmemory -batch -leaks_only -logdir ${{env.BUILD_DIR}}/logs -- ctest --build-config ${{matrix.build_type}}
       run: |
-        drmemory -logdir ${{env.BUILD_DIR}}/logs -- ctest
+        drmemory -verbose 2 -leaks_only -no_count_leaks -no_track_allocs -logdir ${{env.BUILD_DIR}}/logs/DrMemory -- ctest --build-config ${{matrix.build_type}}
         echo "\n\nDrMemory Logs: \n"
         cat ${{env.BUILD_DIR}}/logs/DrMemory/DrMemory-*

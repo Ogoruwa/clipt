@@ -1,12 +1,17 @@
 # Remove non clang flags from compile_commands.json for clang-tidy
 
 if (CMAKE_C_COMPILER_ID STREQUAL "Clang")
-    message(STATUS "Skipping compile commands cleaning since the compiler is Clang")
+    message(STATUS "Compiler is Clang, skipping compile commands clean")
+    return()
+endif()
+
+if (MSVC)
+    message(STATUS "Compiler is MSVC, skipping compile commands clean")
     return()
 endif()
 
 if (NOT ENABLE_CLANG_TIDY)
-    message(STATUS "Skipping compile commands cleaning since clang-tidy is not enabled")
+    message(STATUS "Clang-tidy is not enabled, skipping compile commands clean")
     return()
 endif()
 
@@ -26,7 +31,7 @@ add_custom_command(
     OUTPUT  ${old_cc_json}
     DEPENDS ${cc_json}
 
-    COMMAND ${CMAKE_COMMAND} -E copy "${cc_json}" "${old_cc_json}"
+    COMMAND ${CMAKE_COMMAND} -E copy ${cc_json} ${old_cc_json}
     COMMAND sed -E "\"s/( )(${bad_flags_string})( )/ /g\"" < "${old_cc_json}" > "${cc_json}"
 )
 

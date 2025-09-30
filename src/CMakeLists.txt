@@ -1,6 +1,3 @@
-include("ClangTidy.cmake")
-
-
 include("HashMap.cmake")
 
 add_subdirectory("language")
@@ -12,7 +9,7 @@ endif()
 
 include("CompilerOptions.cmake")
 
-
+include("ClangTidy.cmake")
 
 if (TARGET CleanCompileCommands)
     add_dependencies(Lang CleanCompileCommands)

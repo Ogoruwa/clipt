@@ -34,49 +34,16 @@ endif()
 
 if(ENABLE_CLANG_TIDY)
     find_program(CLANG_TIDY NAMES clang-tidy REQUIRED)
-    set(CMAKE_C_CLANG_TIDY "${CLANG_TIDY};--checks=.clang-tidy;-p=build")
+    set(CMAKE_C_CLANG_TIDY "${CLANG_TIDY}" "--checks" ".clang-tidy" "-p" "build")
 
     if(CLANG_TIDY_WARNINGS_AS_ERRORS)
-        set(CMAKE_C_CLANG_TIDY "${CMAKE_C_CLANG_TIDY};--warnings-as-errors=*")
+        set(CMAKE_C_CLANG_TIDY "${CMAKE_C_CLANG_TIDY}" "--warnings-as-errors" "*")
     endif()
 endif()
 
 
 # Targets
 add_subdirectory("src")
-
-add_subdirectory("src/language")
-
-if(BUILD_INTERPRETER)
-    add_subdirectory("src/interpreter")
-endif()
-
-
-# Compiler options
-if (MSVC)
-    target_compile_options(Lang PUBLIC /permissive-)
-
-    if (CLANG_TIDY_WARNINGS_AS_ERRORS)
-        target_compile_options(Lang PUBLIC /WX)
-        target_link_options(Lang PUBLIC /WX)
-    endif()
-
-    if (CMAKE_BUILD_TYPE MATCHES "Debug")
-        target_link_options(Lang PUBLIC /DEBUG)
-
-        if (ENABLE_ASAN)
-            target_compile_options(Lang PUBLIC /fsanitize=address)
-        endif()
-    endif()
-
-else()
-    target_compile_options(Lang PUBLIC -g PUBLIC -free PUBLIC -Wall)
-
-    if (ENABLE_ASAN AND (CMAKE_BUILD_TYPE MATCHES "Debug"))
-        target_compile_options(Lang PUBLIC -fsanitize=address,undefined PUBLIC -fno-omit-frame-pointer)
-        target_link_options(Lang PUBLIC -fsanitize=address,undefined)
-    endif()
-endif()
 
 
 

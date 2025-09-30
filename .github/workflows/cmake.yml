@@ -100,7 +100,7 @@ jobs:
         brew install llvm
         echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
         echo LDFLAGS="-L/opt/homebrew/opt/llvm/lib -L/opt/homebrew/opt/llvm/lib/c++" >> $GITHUB_ENV
-        echo CFLAGS="-I/opt/homebrew/opt/llvm/include" >> $GITHUB_ENV
+        echo CFLAGS="-I/opt/homebrew/opt/llvm/include -v -E" >> $GITHUB_ENV
 
 
     - name: Configure CMake
@@ -112,7 +112,6 @@ jobs:
         cmake -S ${{github.workspace}} -B ${{env.BUILD_DIR}}
         -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
         -DCMAKE_C_COMPILER=${{matrix.c_compiler}}
-        -DCMAKE_C_FLAGS="-v -E"
         -DENABLE_CLANG_TIDY=ON -DCLANG_TIDY_WARNINGS_AS_ERRORS=${{((env.IS_MAIN_BRANCH == 'true') && 'ON') || 'OFF'}}
         -DENABLE_ASAN=ON
 

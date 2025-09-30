@@ -126,10 +126,10 @@ void print_token(Token* token) {
     } else if (token->token_type == NUMBER) {
         double value = *((double*)token->literal);
         size_t size = snprintf(NULL, 0, "%f", value);
-        info = malloc(size++);
+        info = malloc(size);
 
         memset(info, '\0', size);
-        (void)snprintf(info, size, "%f", value);
+        (void)snprintf(info, --size, "%f", value);
 
     } else {
         printf("%s", token_name);

@@ -128,10 +128,29 @@ void test_token_type_names() {
 };
 
 
+void test_print_token() {
+    Token* token;
+    char* lexeme;
+    char* temp_s = "'TEST'";
+
+    lexeme = calloc(strlen(temp_s) - 1, sizeof(char));
+    strncpy(lexeme, &(temp_s[1]), strlen(temp_s) - 2);
+
+    token = create_token(STRING, temp_s, strlen(temp_s), lexeme, 1);
+    assert(tokencmp(token, &(Token){temp_s, STRING, 1, lexeme}));
+    print_token(token);
+
+    free_tokens(token);
+    printf("test_print_token passed.\n");
+};
+
+
 int test_token() {
     test_token_creation();
-    test_token_memory();
     test_token_type_names();
+
+    test_token_memory();
+    test_print_token();
 
     printf("test_token passed.\n");
 

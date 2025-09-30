@@ -111,7 +111,7 @@ jobs:
       run: >
         cmake -S ${{github.workspace}} -B ${{env.BUILD_DIR}}
         -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
-        -DCMAKE_C_COMPILER=${{matrix.c_compiler}}
+        -DCMAKE_C_COMPILER="${{matrix.c_compiler}} -v -E"
         -DENABLE_CLANG_TIDY=ON -DCLANG_TIDY_WARNINGS_AS_ERRORS=${{((env.IS_MAIN_BRANCH == 'true') && 'ON') || 'OFF'}}
         -DENABLE_ASAN=ON
 
@@ -168,19 +168,20 @@ jobs:
       working-directory: ${{github.workspace}}
       run: |
         echo ""
-        echo /opt/homebrew/opt/llvm/include
-        ls -R /opt/homebrew/opt/llvm/include
+        which ${{matrix.c_compiler}}
+        echo ""
+        echo /opt/homebrew/opt/llvm/include/c++/v1
+        ls /opt/homebrew/opt/llvm/include/c++/v1
         echo ""
         echo ""
-        echo /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/
-        ls -R /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/
+        echo /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include/llvm_libc_wrappers
+        ls /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include/llvm_libc_wrappers
         echo ""
         echo ""
         echo /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
         ls /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
         echo ""
-        xcodebuild -version
-        ${{matrix.c_compiler}} -v -E src/language/utils.c
+        ${{matrix.c_compiler}} -v -E src/language/utils.c -Iinclude
 
 
     - name: Upload build artifacts

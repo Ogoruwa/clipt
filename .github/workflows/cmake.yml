@@ -99,7 +99,7 @@ jobs:
       run: |
         brew install llvm
         echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
-        echo LDFLAGS="-L/opt/homebrew/opt/llvm/lib -L/opt/homebrew/opt/llvm/lib/c++ -L/opt/homebrew/opt/llvm/lib/unwind -lunwind" >> $GITHUB_ENV
+        echo LDFLAGS="-L/opt/homebrew/opt/llvm/lib -L/opt/homebrew/opt/llvm/lib/c++" >> $GITHUB_ENV
         echo CFLAGS="-I/opt/homebrew/opt/llvm/include" >> $GITHUB_ENV
 
 
@@ -149,6 +149,7 @@ jobs:
         echo "${{runner.os == 'Windows' && '$env:PATH' || '$PATH'}}"
         echo "=============="
         echo ""
+        echo ""
         echo "===== Env ====="
         echo "${{runner.os == 'Windows' && '$env' || '$(env)'}}"
         echo "================"
@@ -166,8 +167,19 @@ jobs:
       if: always() && runner.os == 'macOS'
       working-directory: ${{github.workspace}}
       run: |
-        which ${{matrix.c_compiler}}
-        ${{matrix.c_compiler}} --version
+        ls /opt/homebrew/opt/llvm
+        echo ""
+        ls /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include
+        echo ""
+        ls /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
+        echo ""
+        ls /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include
+        echo ""
+        echo ""
+        xcodebuild -version
+        xcode-select --install
+        echo ""
+        echo ""
         ${{matrix.c_compiler}} -v -E src/language/utils.c
 
 

@@ -102,14 +102,6 @@ jobs:
         echo LDFLAGS="-L/opt/homebrew/opt/llvm/lib -L/opt/homebrew/opt/llvm/lib/c++ -L/opt/homebrew/opt/llvm/lib/unwind -lunwind" >> $GITHUB_ENV
         echo CFLAGS="-I/opt/homebrew/opt/llvm/include" >> $GITHUB_ENV
 
-    - name: Debug MacOS
-      working-directory: ${{github.workspace}}
-      if: runner.os == 'macOS'
-      run: |
-        which ${{matrix.c_compiler}}
-        ${{matrix.c_compiler}} --version
-        ${{matrix.c_compiler}} -v -E src/language/utils.c
-
 
     - name: Configure CMake
       id: configure
@@ -168,6 +160,15 @@ jobs:
         ls -R "lib"
         ls -R "Testing" 2> ${{runner.os == 'Windows' && '$null' || '/dev/null'}}
         ls -R "Packaging" 2> ${{runner.os == 'Windows' && '$null' || '/dev/null'}}
+
+
+    - name: Debug MacOS
+      if: always() && runner.os == 'macOS'
+      working-directory: ${{github.workspace}}
+      run: |
+        which ${{matrix.c_compiler}}
+        ${{matrix.c_compiler}} --version
+        ${{matrix.c_compiler}} -v -E src/language/utils.c
 
 
     - name: Upload build artifacts

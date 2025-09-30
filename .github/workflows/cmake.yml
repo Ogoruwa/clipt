@@ -77,7 +77,7 @@ jobs:
 
 
     - name: Extra setup (Linux)
-      if: runner.os == 'Linux'
+      if: runner.os == 'Linux' && false
       run: |
         echo "Nothing to do here"
 
@@ -96,6 +96,8 @@ jobs:
     - name: Extra setup (MacOS)
       if: runner.os == 'macOS'
       # Setup clang-tidy
+      # "/Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include"
+      # Add the above path as a sysroot (standard library folder) to avoid missing headers errors
       run: |
         brew install llvm
         echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
@@ -140,7 +142,8 @@ jobs:
         cpack -C ${{matrix.build_type}}
 
 
-    - name: Debug build directory
+    - name: Debug Job
+      # If the build or tests failed, print relevant information to help debugging.
       if: ${{ always() && (steps.pack.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure') }}
       working-directory: ${{env.BUILD_DIR}}
       run: |
@@ -161,20 +164,10 @@ jobs:
         ls -R "lib"
         ls -R "Testing"
         ls -R "Packaging"
-
-
-    - name: Debug MacOS
-      if: always() && runner.os == 'macOS'
-      working-directory: ${{github.workspace}}
-      run: |
-        echo ""
-        which ${{matrix.c_compiler}}
-        echo ""
-        echo ""
-        echo /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
-        ls /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
-        echo ""
-        ${{matrix.c_compiler}} -v -E src/language/utils.c -Iinclude
+        echo "===========================
+        echo """
+        echo "==== Compile Test ===="
+        ${{matrix.c_compiler}} -v -E ../src/language/utils.c -I../include
 
 
     - name: Upload build artifacts

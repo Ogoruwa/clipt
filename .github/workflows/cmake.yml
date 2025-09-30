@@ -99,6 +99,8 @@ jobs:
       run: |
         brew install llvm
         echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
+        echo LDFLAGS="-L/opt/homebrew/opt/llvm/lib" >> $GITHUB_ENV
+        echo CFLAGS="-I/opt/homebrew/opt/llvm/include" >> $GITHUB_ENV
 
 
     - name: Configure CMake
@@ -143,7 +145,7 @@ jobs:
       if: ${{ always() && (steps.pack.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure') }}
       working-directory: ${{env.BUILD_DIR}}
       run: |
-        echo -e "\nPath: ${{runner.os == 'Windows' && '$env:PATH' || '$PATH'}}\n"
+        echo "\nPath: ${{runner.os == 'Windows' && '$env:PATH' || '$PATH'}}\n"
         ls
         ls -R "bin"
         ls -R "lib"

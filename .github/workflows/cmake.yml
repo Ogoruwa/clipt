@@ -167,12 +167,13 @@ jobs:
       if: always() && runner.os == 'macOS'
       working-directory: ${{github.workspace}}
       run: |
+        echo ""
         echo /opt/homebrew/opt/llvm/include
-        ls /opt/homebrew/opt/llvm/include
-        echo "x"
-        echo "x"
-        echo /xApplications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include
-        ls /xApplications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include
+        ls -R /opt/homebrew/opt/llvm/include
+        echo ""
+        echo ""
+        echo /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/
+        ls -R /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/
         echo ""
         echo ""
         echo /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include

@@ -164,8 +164,8 @@ jobs:
         ls -R "lib"
         ls -R "Testing"
         ls -R "Packaging"
-        echo "===========================
-        echo """
+        echo "==========================="
+        echo ""
         echo "==== Compile Test ===="
         ${{matrix.c_compiler}} -v -E ../src/language/utils.c -I../include
 

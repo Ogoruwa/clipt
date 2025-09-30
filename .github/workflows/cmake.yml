@@ -93,22 +93,22 @@ jobs:
         echo "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64" >> $env:GITHUB_PATH
 
 
-    - name: Install clang-tidy (MacOS)
-      if: runner.os == 'macOS'
-      uses: ConorMacBride/install-package@v1
-      with:
-        brew: llvm
-
     - name: Extra setup (MacOS)
       if: runner.os == 'macOS'
       # Setup clang-tidy
       run: |
+        brew install llvm
         echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
-        xcode-select -p || true
-      # xcode-select --install || true
-      # sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
-      # echo LDFLAGS="-L/opt/homebrew/opt/llvm/lib" >> $GITHUB_ENV
-      # echo CFLAGS="-I/opt/homebrew/opt/llvm/include" >> $GITHUB_ENV
+        echo LDFLAGS="-L/opt/homebrew/opt/llvm/lib -L/opt/homebrew/opt/llvm/lib/c++ -L/opt/homebrew/opt/llvm/lib/unwind -lunwind" >> $GITHUB_ENV
+        echo CFLAGS="-I/opt/homebrew/opt/llvm/include" >> $GITHUB_ENV
+
+    - name: Debug MacOS
+      working-directory: ${{github.workspace}}
+      if: runner.os == 'macOS'
+      run: |
+        which ${{matrix.c_compiler}}
+        ${{matrix.c_compiler}} --version
+        ${{matrix.c_compiler}} -v -E src/language/utils.c
 
 
     - name: Configure CMake
@@ -152,8 +152,17 @@ jobs:
       if: ${{ always() && (steps.pack.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure') }}
       working-directory: ${{env.BUILD_DIR}}
       run: |
-        echo "\\nPath: ${{runner.os == 'Windows' && '$env:PATH' || '$PATH'}}\\n"
-        echo "\\nEnv: ${{runner.os == 'Windows' && '$env' || '$(env)'}}\\n"
+        echo ""
+        echo "==== Path ===="
+        echo "${{runner.os == 'Windows' && '$env:PATH' || '$PATH'}}"
+        echo "=============="
+        echo ""
+        echo "===== Env ====="
+        echo "${{runner.os == 'Windows' && '$env' || '$(env)'}}"
+        echo "================"
+        echo ""
+        echo ""
+        echo "===== Build Directory ====="
         ls
         ls -R "bin"
         ls -R "lib"

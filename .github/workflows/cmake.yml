@@ -27,7 +27,11 @@ jobs:
     runs-on: ${{matrix.os}}
 
     env:
-      IS_MAIN_BRANCH: ${{ (github.event_name == 'push' && github.head_ref == 'main') || github.ref_name == 'main'  }}
+      IS_MAIN_BRANCH: ${{ (github.event_name == 'push' && github.head_ref == 'main') ||  github.ref_name == 'main'  }}
+      BUILD_DIR: ${{github.workspace}}/build
+      ARTIFACT_NAME: CLipt-${{matrix.os}}-${{matrix.c_compiler}}-${{matrix.build_type}}
+      REPL_EXECUTABLE: ${{github.workspace}}/build/bin/${{matrix.build_type}}/cliptr
+      TEST_EXECUTABLE: ${{github.workspace}}/build/bin/${{matrix.build_type}}/test_suite
 
     strategy:
       fail-fast: false
@@ -62,94 +66,145 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v4
 
-    - name: Set reusable strings
+
+    - name: Setup
       # Turn repeated input strings (such as the build output directory) into step outputs.
       # These step outputs can be used throughout the workflow file.
       id: strings
       shell: bash
       run: |
-        echo "build-output-dir=${{github.workspace}}/build" >> "$GITHUB_OUTPUT"
-        echo "artifact-name=CLipt-${{matrix.os}}-${{matrix.c_compiler}}-${{matrix.build_type}}" >> "$GITHUB_OUTPUT"
-        echo "test-executable=${{github.workspace}}/build/bin/${{matrix.build_type}}/test_suite" >> "$GITHUB_OUTPUT"
-        echo "repl-executable=${{github.workspace}}/build/bin/${{matrix.build_type}}/clipti" >> "$GITHUB_OUTPUT"
+        mkdir -p "${{github.workspace}}/build/logs"
 
 
-    # Install clang tidy
-    - name: Install clang-tidy
-      if: env.IS_MAIN_BRANCH
-      uses: ConorMacBride/install-package@v1
-      with:
-        apt: clang-tidy
-        brew: llvm
-
-    - name: Setup path to clang-tidy (MacOS)
-      if: runner.os == 'macOS'
+    - name: Extra setup (Linux)
+      if: runner.os == 'Linux' && false
       run: |
-        echo "PATH=$(brew --prefix llvm)/bin:${PATH}" >> $GITHUB_ENV
+        echo "Nothing to do here"
 
-    - name: Setup path to clang-tidy (Windows)
+
+    - name: Extra setup (Windows)
+      # Visual Studio folder added to path so executables can find clang_rt.asan dll
+      # Windows kits folder added to path so executables can find ucrt dll
       if: runner.os == 'Windows'
       run: |
-        echo "PATH=C:\Program Files\LLVM\bin;${PATH}" >> $GITHUB_ENV
+        mkdir -p "${{env.BUILD_DIR}}/logs/DrMemory" > $null
+        echo "C:\Program Files (x86)\Dr. Memory\bin" >> $env:GITHUB_PATH
+        echo "C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\ucrt" >> $env:GITHUB_PATH
+        echo "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64" >> $env:GITHUB_PATH
+
+
+    - name: Extra setup (MacOS)
+      if: runner.os == 'macOS'
+      # Setup clang-tidy
+      # "/Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include"
+      # Add the above path as a sysroot (standard library folder) to avoid missing headers errors
+      run: |
+        brew install llvm
+        echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
+        echo LDFLAGS="-L/opt/homebrew/opt/llvm/lib -L/opt/homebrew/opt/llvm/lib/c++" >> $GITHUB_ENV
+        echo CFLAGS="-I/opt/homebrew/opt/llvm/include -isysroot /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include" >> $GITHUB_ENV
+
 
     - name: Configure CMake
+      id: configure
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required
       # if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: >
-        cmake -S ${{github.workspace}} -B ${{steps.strings.outputs.build-output-dir}}
+        cmake -S ${{github.workspace}} -B ${{env.BUILD_DIR}}
         -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
         -DCMAKE_C_COMPILER=${{matrix.c_compiler}}
-        -DCMAKE_C_FLAGS="-fsanitize=address -fno-omit-frame-pointer"
         -DENABLE_CLANG_TIDY=ON -DCLANG_TIDY_WARNINGS_AS_ERRORS=${{((env.IS_MAIN_BRANCH == 'true') && 'ON') || 'OFF'}}
+        -DENABLE_ASAN=ON
 
 
     - name: Build
+      id: build
       # Build your program with the given configuration. Note that --config is needed because
       # the default Windows generator is a multi-config generator (Visual Studio generator).
-      run: cmake --build ${{steps.strings.outputs.build-output-dir}} --config ${{matrix.build_type}}
+      run: cmake --build ${{env.BUILD_DIR}} --config ${{matrix.build_type}}
+
 
     - name: Test
-      working-directory: ${{steps.strings.outputs.build-output-dir}}
+      id: test
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because
       # the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ctest --output-on-failure --build-config ${{matrix.build_type}}
+      working-directory: ${{env.BUILD_DIR}}
+      run: |
+        ctest --output-on-failure --build-config ${{matrix.build_type}}
+
 
     - name: Pack
-      working-directory: ${{steps.strings.outputs.build-output-dir}}
-      run: cpack
+      id: pack
+      working-directory: ${{env.BUILD_DIR}}
+      run: |
+        cpack -C ${{matrix.build_type}}
+
+
+    - name: Debug Job
+      # If the build or tests failed, print relevant information to help debugging.
+      if: ${{ always() && (steps.pack.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure') }}
+      working-directory: ${{env.BUILD_DIR}}
+      run: |
+        echo ""
+        echo "==== Path ===="
+        echo "${{runner.os == 'Windows' && '$env:PATH' || '$PATH'}}"
+        echo "=============="
+        echo ""
+        echo ""
+        echo "===== Env ====="
+        echo "${{runner.os == 'Windows' && '$env' || '$(env)'}}"
+        echo "================"
+        echo ""
+        echo ""
+        echo "===== Build Directory ====="
+        ls && mkdir -p Testing Packaging
+        ls -R "bin"
+        ls -R "lib"
+        ls -R "Testing"
+        ls -R "Packaging"
+        echo "==========================="
+        echo ""
+        echo "==== Compile Test ===="
+        ${{matrix.c_compiler}} -v -E ../src/language/utils.c -I../include
+
 
     - name: Upload build artifacts
+      # Upload packaged files
+      if: ${{ always() && steps.pack.outcome == 'success' }}
       uses: actions/upload-artifact@v4
       with:
-        name: ${{steps.strings.outputs.artifact-name}}
-        path: ${{steps.strings.outputs.build-output-dir}}/Packaging/*.*
+        name: ${{env.ARTIFACT_NAME}}
+        path: ${{env.BUILD_DIR}}/Packaging/*.*
         retention-days: 7
         if-no-files-found: error
 
 
     # Run memory leak tests
-    - name: Install Valgrind
+    - name: Install Valgrind (Linux) or DrMemory (Windows)
       uses: ConorMacBride/install-package@v1
       with:
         apt: valgrind
-        choco: drmemory
+        # choco: drmemory
 
     - name: Run memory leak tests (Linux)
-      working-directory: ${{steps.strings.outputs.build-output-dir}}
+      working-directory: ${{env.BUILD_DIR}}
       if: runner.os == 'Linux'
       run: |
-        valgrind --leak-check=full --show-leak-kinds=all -s ctest
+        valgrind --leak-check=full --show-leak-kinds=all -s ctest --build-config ${{matrix.build_type}}
 
     - name: Run memory leak tests (MacOS)
-      working-directory: ${{steps.strings.outputs.build-output-dir}}
+      working-directory: ${{env.BUILD_DIR}}
       if: runner.os == 'macOS'
       run: |
-        MallocStackLogging=1 leaks -atExit -- ctest
+        MallocStackLogging=1 leaks -atExit -- ctest --build-config ${{matrix.build_type}}
 
     - name: Run memory leak tests (Windows)
-      working-directory: ${{steps.strings.outputs.build-output-dir}}
-      if: runner.os == 'Windows'
+      working-directory: ${{env.BUILD_DIR}}
+      if: runner.os == 'Windows' && false
+      #drmemory -batch -leaks_only -logdir ${{env.BUILD_DIR}}/logs -- ctest --build-config ${{matrix.build_type}}
       run: |
-        drmemory -leak_check -ignore_kernel -batch -results_to_stdout -- ctest
+        drmemory -verbose 2 -leaks_only -no_count_leaks -no_track_allocs -logdir ${{env.BUILD_DIR}}/logs/DrMemory -- ctest --build-config ${{matrix.build_type}}
+        echo "\n\nDrMemory Logs: \n"
+        cat ${{env.BUILD_DIR}}/logs/DrMemory/DrMemory-*

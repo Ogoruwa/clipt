@@ -2,7 +2,10 @@ option(PACKAGE_SETUPS "Package installers" OFF)
 option(PACKAGE_DISTROS "Package rpm and deb" OFF)
 
 
+# System Libraries
+set (CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
 include(InstallRequiredSystemLibraries)
+# install (PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
 
 # Debian

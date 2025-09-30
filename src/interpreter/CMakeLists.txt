@@ -1,12 +1,17 @@
-project(CLInterpreter VERSION ${CLipt_VERSION})
+project(CLInterpreter
+    VERSION ${CLipt_VERSION}
+    DESCRIPTION "Interpreter for CLipt language"
+)
 
 
 # Targets
 set(sources clipti.c)
 add_library(Interpreter STATIC ${sources})
+add_dependencies(Interpreter Lang)
 
 set(sources repl.c)
 add_executable(REPL ${sources})
+add_dependencies(REPL Interpreter)
 
 
 # Properties

@@ -1,16 +1,6 @@
 #include "repl.h"
 
 
-bool end_of_line(char* string) {
-    uint64_t size = strlen(string);
-    if (size == 0) {
-        return true;
-    };
-
-    return string[size - 1] == '\n';
-};
-
-
 void print_intro() {
     printf("\n");
     printf("Clipti v0.1.0\n");
@@ -24,16 +14,17 @@ void print_usage(char* name) {
 
 void repl() {
     bool eol = true;
-    char* fp = NULL;
     bool newline = false;
+    char* fp = NULL;
     char buffer[REPL_BUFFER_SIZE] = {'\0'};
 
-    Interpreter* interpreter = create_interpreter();
+    Interpreter* interpreter = new_interpreter();
     print_intro();
 
     do {
         if (eol) {
             if (newline) {
+                newline = false;
                 printf("\n");
             };
             printf(">>> ");
@@ -43,11 +34,19 @@ void repl() {
         fp = fgets(buffer, REPL_BUFFER_SIZE, stdin);
         if (ferror(stdin)) {
             perror("\n repl error");
-            eol = true;
+            eol = newline = true;
 
         } else {
             newline = run(interpreter, buffer, strlen(buffer));
-            eol = end_of_line(buffer);
+            eol = AT_END_OF_LINE(buffer);
+
+            memset(buffer, '\0', REPL_BUFFER_SIZE);
+
+            if (interpreter->had_error) {
+                eol = true;
+                newline = false;
+                interpreter->had_error = false;
+            };
         };
     } while (fp != NULL);
 
@@ -58,7 +57,7 @@ void repl() {
 short int script(char* path) {
     short int result;
 
-    Interpreter* interpreter = create_interpreter();
+    Interpreter* interpreter = new_interpreter();
 
     result = run_script(interpreter, path);
 

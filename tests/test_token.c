@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -6,20 +7,18 @@
 #include "token.h"
 
 
-void test_token_creation() {
+void test_token_creation_and_free() {
     Token* t;
     Token* token;
     Token* first_token;
 
-    char* temp_s0 = "'Hello World!'";
+    char* temp_s = "'Hello World!'";
     double* temp_n = malloc(sizeof(double));
     double* temp_n2 = malloc(sizeof(double));
-    char* temp_s = calloc(sizeof(char), strlen(temp_s0) - 1);
-    char* temp_s2 = calloc(sizeof(char), strlen(temp_s0) - 1);
+    char* temp_s2 = calloc(sizeof(char), strlen(temp_s) - 1);
 
     *temp_n = *temp_n2 = 1001.007;
-    strncpy(temp_s, &(temp_s0[1]), strlen(temp_s0) - 2);
-    strncpy(temp_s2, &(temp_s0[1]), strlen(temp_s0) - 2);
+    strncpy(temp_s2, &(temp_s[1]), strlen(temp_s) - 2);
 
     first_token = t = create_token(IDENTIFIER, "first_variable", strlen("first_variable"), NULL, 1);
     token = create_token(AND, "and", 3, NULL, 2);
@@ -31,7 +30,7 @@ void test_token_creation() {
     token = create_token(OR, "or", 2, NULL, 4);
     t->next_token = token;
 
-    t = create_token(STRING, temp_s0, strlen(temp_s0), (void*)temp_s, 4);
+    t = create_token(STRING, temp_s, strlen(temp_s), (void*)temp_s2, 4);
     token->next_token = t;
 
     token = first_token;
@@ -47,9 +46,8 @@ void test_token_creation() {
     assert(tokencmp(token, &(Token){"or", OR, 4, NULL}));
 
     token = token->next_token;
-    assert(tokencmp(token, &(Token){temp_s0, STRING, 4, (void*)temp_s2}));
+    assert(tokencmp(token, &(Token){temp_s, STRING, 4, &("Hello World!")}));
 
-    free(temp_s2);
     free(temp_n2);
     free_tokens(first_token);
     printf("test_scan_tokens_empty_source passed.\n");
@@ -121,8 +119,14 @@ void test_token_type_names() {
     assert(strcmp(get_token_type_name(SUPER), "SUPER") == 0);
     assert(strcmp(get_token_type_name(SELF), "SELF") == 0);
     assert(strcmp(get_token_type_name(PRINT), "PRINT") == 0);
+    assert(strcmp(get_token_type_name(TEOF), "TEOF") == 0);
 
     assert(get_token_type_name(NO_OF_TOKENS) == NULL);
+
+    // An error here means a token's name was not created
+    for (TokenType i = 0; i < NO_OF_TOKENS; i++) {
+        assert(get_token_type_name(i) != NULL);
+    };
 
     printf("test_token_type_names passed.\n");
 };
@@ -146,7 +150,16 @@ void test_print_token() {
 
 
 int test_token() {
-    test_token_creation();
+    printf("\ntest_token started.\n");
+    printf("Offsets ================>\n");
+    printf("  lexeme     ->   %zu bytes\n", offsetof(Token, lexeme));
+    printf("  token_type ->   %zu bytes\n", offsetof(Token, token_type));
+    printf("  line       ->  %zu bytes\n", offsetof(Token, line));
+    printf("  literal    ->  %zu bytes\n", offsetof(Token, literal));
+    printf("  next_token ->  %zu bytes\n", offsetof(Token, next_token));
+    printf("Token        ->  %zu bytes\n", sizeof(Token));
+
+    test_token_creation_and_free();
     test_token_type_names();
 
     test_token_memory();

@@ -77,8 +77,8 @@ char* scan_string(Lexer* lexer, bool single) {
     // If source has been completely scanned, string was not terminated
     // The above loop is broken only if the source has been scanned or the next character is the terminator
     if (is_finished(lexer)) {
-        // TODO: Raise error
-        return "";
+        lexer->raise_error(lexer->master, &CAST_TO_ERROR_INFO(lexer, SyntaxError));
+        return NULL;
     };
 
     next_character(lexer);
@@ -113,8 +113,9 @@ double* scan_number(Lexer* lexer) {
         };
     };
 
-    if (peek_character(lexer) != ' ' && !is_finished(lexer)) {
-        // TODO: Raise error about invalid number
+    if (!is_finished(lexer) && !is_whitespace(peek_character(lexer))) {
+        lexer->raise_error(lexer->master, &CAST_TO_ERROR_INFO(lexer, SyntaxError));
+        return NULL;
     };
 
     size = lexer->current - lexer->start + 1;
@@ -224,26 +225,30 @@ Token* scan_token(Lexer* lexer) {
         case '\'':
             token_type = STRING;
             literal = scan_string(lexer, true);
+            RETURN_NULL_IF_NULL(literal);
             break;
 
         case '"':
             token_type = STRING;
             literal = scan_string(lexer, false);
+            RETURN_NULL_IF_NULL(literal);
             break;
 
         default:
             if (is_digit(character)) {
                 token_type = NUMBER;
                 literal = scan_number(lexer);
+                RETURN_NULL_IF_NULL(literal);
+
             } else if (is_alpha(character)) {
                 token_type = scan_identifier(lexer);
+
             } else {
-                // TODO: Raise error
+                lexer->raise_error(lexer->master, &CAST_TO_ERROR_INFO(lexer, SyntaxError));
                 return NULL;
             };
     };
 
-    // TODO: Add chracter analysis to determine what token to create
     return add_next_token(lexer, token_type, literal);
 };
 
@@ -276,7 +281,33 @@ Token* scan_tokens(Lexer* lexer) {
 
 
 void reset_lexer(Lexer* lexer) {
-    memset(lexer, 0, sizeof(Lexer));
-    lexer->line = 1;
+    lexer->start = 0;
+    lexer->current = 0;
+    lexer->slen = 0;
     lexer->source = NULL;
+};
+
+
+Lexer* new_lexer(const char* source, uint64_t slen, error_handler err_handler, void* master) {
+    assert(err_handler != NULL);
+
+    Lexer* lexer = (Lexer*)malloc(sizeof(Lexer));
+    if (lexer == NULL) {
+        perror("Failed to allocate memory for lexer");
+        oom();
+    };
+
+    reset_lexer(lexer);
+    lexer->line = 1;
+    lexer->slen = slen;
+    lexer->source = source;
+    lexer->raise_error = err_handler;
+    lexer->master = master;
+
+    return lexer;
+};
+
+
+void free_lexer(Lexer* lexer) {
+    free(lexer);
 };

@@ -5,6 +5,11 @@
         oom();           \
     }
 
+#define RETURN_NULL_IF_NULL(value) \
+    if ((value) == NULL) {         \
+        return NULL;               \
+    }
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>

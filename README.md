@@ -21,11 +21,11 @@ Based on the tutorial at [craftinginterpreters.com](https://craftinginterpreters
 - Lexer
 - Interpreter
 - REPL
-- Error types
+- Error handling
 
 ## Tips
 
-- Execute all `cmake` related commands under the `build` directory
+- Run all `cmake`, `cpack` and `ctest` related commands from the `build` directory
 
 ## Configuration Options
 
@@ -38,6 +38,8 @@ Options can be enabled and disabled when configuring, using the `-D` flag
 The avaiable options are listed below, in this format -> `OPTIONNAME` (`DEFAULT VALUE`)
 
 - `BUILD_INTERPRETER` (`ON`): Build the interpreter
+
+- `ENABLE_ASAN` (`OFF`): Enable compilation of address sanitizer
 
 - `ENABLE_CLANG_TIDY` (`OFF`): Enable clang-tidy checks, requires `clang-tidy` on your path
 
@@ -52,7 +54,7 @@ The avaiable options are listed below, in this format -> `OPTIONNAME` (`DEFAULT 
 1. Clone this repository and enter the directory
 
 ```shell
-    git clone https://github.com/Ogoruwa/clipt.git`
+    git clone https://github.com/Ogoruwa/clipt.git
     cd clipt
 ```
 
@@ -73,13 +75,11 @@ The avaiable options are listed below, in this format -> `OPTIONNAME` (`DEFAULT 
 ## Testing
 
 ```shell
-    cd build
     ctest
 ```
 
 ## Packaging
 
 ```shell
-    cd build
     cpack
 ```

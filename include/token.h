@@ -100,6 +100,8 @@ void free_tokens(Token* token);
 
 bool tokencmp(Token* a, Token* b);
 
+bool tokencmp_e(Token* a, Token* b);
+
 void print_token(Token* token);
 
 const char* get_token_type_name(TokenType token_type);

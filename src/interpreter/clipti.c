@@ -4,16 +4,23 @@
 bool run(Interpreter* interpreter, char* source, uint64_t size) {
     Token* token = NULL;
 
+    if (interpreter->had_error) {
+        raise_error(interpreter, &(ErrorInfo){0, 0, 0, Exception, NULL});
+        return false;
+    };
+
     size = strrssize(source, size);
     if (size == 0) {
         return false;
     };
 
+    reset_lexer(interpreter->lexer);
+
     interpreter->lexer->source = source;
     interpreter->lexer->slen = size;
     token = scan_tokens(interpreter->lexer);
 
-    if (token == NULL) {
+    if (token == NULL || interpreter->had_error) {
         return false;
     };
 
@@ -31,7 +38,7 @@ bool run(Interpreter* interpreter, char* source, uint64_t size) {
 };
 
 
-short int run_script(Interpreter* interpreter, char* path) {
+bool run_script(Interpreter* interpreter, char* path) {
     FILE* fp;
     fp = fopen(path, "r");
 
@@ -42,34 +49,36 @@ short int run_script(Interpreter* interpreter, char* path) {
 
     char buffer[FILE_BUFFER_SIZE];
 
-    while (fgets(buffer, FILE_BUFFER_SIZE, fp) != NULL) {
-        run(interpreter, buffer, FILE_BUFFER_SIZE);
+    while (!interpreter->had_error && fgets(buffer, FILE_BUFFER_SIZE, fp) != NULL) {
+        (void)run(interpreter, buffer, FILE_BUFFER_SIZE);
     };
 
     if (fclose(fp) == EOF) {
         perror("Error closing file");
     };
 
-    return 0;
+    return interpreter->had_error;
 };
 
 
-Interpreter* create_interpreter() {
-    Lexer* lexer = (Lexer*)malloc(sizeof(Lexer));
-    if (lexer == NULL) {
-        perror("Failed to allocate memory for lexer");
-        oom();
-    };
-    reset_lexer(lexer);
+void raise_error(Interpreter* interpreter, ErrorInfo* info) {
+    interpreter->had_error = true;
+    handle_new_error(info);
+};
 
+
+Interpreter* new_interpreter() {
     Interpreter* interpreter = (Interpreter*)malloc(sizeof(Interpreter));
     if (interpreter == NULL) {
         perror("Failed to allocate memory for interpreter");
-        free(lexer);
         oom();
     };
 
+    Lexer* lexer = new_lexer(NULL, 0, (error_handler)raise_error, interpreter);
+
+    interpreter->had_error = false;
     interpreter->lexer = lexer;
+
 
     return interpreter;
 };

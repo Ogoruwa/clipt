@@ -46,6 +46,7 @@ const char* get_token_type_name(TokenType token_type) {
         [SUPER] = "SUPER",
         [SELF] = "SELF",
         [PRINT] = "PRINT",
+        [TEOF] = "TEOF"
     };
 
     if (token_type < NO_OF_TOKENS && token_type >= 0) {
@@ -57,26 +58,34 @@ const char* get_token_type_name(TokenType token_type) {
 
 
 bool tokencmp(Token* a, Token* b) {
-    bool literal;
+    assert(a != NULL && b != NULL);
 
     if ((a->token_type != b->token_type) || (strcmp(a->lexeme, b->lexeme) != 0)) {
         return false;
     };
 
     if ((a->literal == NULL) || (b->literal == NULL)) {
-        literal = (a->literal == NULL) && (b->literal == NULL);
+        return (a->literal == NULL) && (b->literal == NULL);
+
     } else {
         switch (a->token_type) {
-            case (STRING): literal = strcmp((char*)a->literal, (char*)b->literal) == 0; break;
+            case (STRING): return strcmp((char*)a->literal, (char*)b->literal) == 0; break;
 
-            case (NUMBER): literal = (*(double*)a->literal) == (*(double*)b->literal); break;
+            case (NUMBER): return (*(double*)a->literal) == (*(double*)b->literal); break;
 
-            default: literal = true; break;
+            default: return false; break;
         }
     };
-
-    return literal;
 };
+
+
+bool tokencmp_e(Token* a, Token* b) {
+    if (a->line != b->line) {
+        return false;
+    };
+
+    return tokencmp(a, b);
+}
 
 
 Token* create_token(TokenType token_type, const char* lexeme, uint64_t lexeme_size, void* literal, uint64_t line) {

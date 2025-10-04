@@ -1,13 +1,14 @@
-set(sources test_token.c test_lexer.c test_error.c)
+set(sources test_test_utils.c test_token.c test_lexer.c test_error.c)
 set(TEST_DRIVER_NAME testdriver.c)
 
 create_test_sourcelist(tests ${TEST_DRIVER_NAME} ${sources})
 
 
 # Targets
-add_executable(TestSuite ${tests})
+add_executable(TestSuite utils_test.c ${tests})
 set_target_properties(TestSuite PROPERTIES OUTPUT_NAME test_suite)
 set_source_files_properties(${TEST_DRIVER_NAME} PROPERTIES SKIP_LINTING ON)
+
 target_link_libraries(TestSuite PRIVATE Lang)
 
 

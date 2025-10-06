@@ -149,6 +149,13 @@ jobs:
         ctest --output-on-failure --build-config ${{matrix.build_type}}
 
 
+    - name: Install Valgrind (Linux) or DrMemory (Windows)
+      uses: ConorMacBride/install-package@v1
+      with:
+        apt: valgrind
+        choco: drmemory
+
+
     - name: CTest Dashboard Client (Continuous)
       id: ctest-dashboard
       working-directory: ${{github.workspace}}
@@ -203,12 +210,6 @@ jobs:
 
 
     # Run memory leak tests
-    - name: Install Valgrind (Linux) or DrMemory (Windows)
-      uses: ConorMacBride/install-package@v1
-      with:
-        apt: valgrind
-        # choco: drmemory
-
     - name: Run memory leak tests (Linux)
       working-directory: ${{env.BUILD_DIR}}
       if: runner.os == 'Linux'

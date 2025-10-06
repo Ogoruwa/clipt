@@ -39,7 +39,11 @@ ctest_build()
 
 
 include("src/MemoryCheck.cmake")
-ctest_memcheck()
+if (CTEST_MEMORYCHECK_COMMAND)
+    ctest_memcheck()
+else()
+    ctest_test()
+endif()
 
 
 ctest_submit(

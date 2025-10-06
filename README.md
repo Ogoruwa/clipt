@@ -15,6 +15,8 @@ The end goal is to create a functional, interpreted programming language.
 
 Based on the tutorial at [craftinginterpreters.com](https://craftinginterpreters.com).
 
+CDash link: https://my.cdash.org/index.php?project=Clipt
+
 ## Features
 
 - Token

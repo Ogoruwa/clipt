@@ -15,6 +15,7 @@ option(ENABLE_CLANG_TIDY "Enable cLang-tidy checks" OFF)
 
 
 # Variables
+set(CTEST_USE_LAUNCHERS TRUE)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -48,6 +49,7 @@ add_subdirectory("src")
 
 
 # Testing
+include("src/MemoryCheck.cmake")
 include(CTest)
 
 if(BUILD_TESTING)

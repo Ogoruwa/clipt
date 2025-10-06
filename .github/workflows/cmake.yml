@@ -27,8 +27,10 @@ jobs:
     runs-on: ${{matrix.os}}
 
     env:
-      IS_MAIN_BRANCH: ${{ (github.event_name == 'push' && github.head_ref == 'main') ||  github.ref_name == 'main'  }}
+      CDASH_AUTH_TOKEN: ${{ secrets.CDASH_AUTH_TOKEN }}
       BUILD_DIR: ${{github.workspace}}/build
+      IS_MAIN_BRANCH: ${{ (github.event_name == 'push' && github.head_ref == 'main') ||  github.ref_name == 'main'  }}
+
       ARTIFACT_NAME: CLipt-${{matrix.os}}-${{matrix.c_compiler}}-${{matrix.build_type}}
       REPL_EXECUTABLE: ${{github.workspace}}/build/bin/${{matrix.build_type}}/cliptr
       TEST_EXECUTABLE: ${{github.workspace}}/build/bin/${{matrix.build_type}}/test_suite
@@ -41,9 +43,12 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         build_type: [Debug]
         c_compiler: [gcc, clang, cl]
+        cmake_generator: ["Unix Makefiles", "Visual Studio 17 2022"]
         include:
           - os: windows-latest
             c_compiler: cl
+          - os: windows-latest
+            cmake_generator: "Visual Studio 17 2022"
           - os: ubuntu-latest
             c_compiler: gcc
           - os: ubuntu-latest
@@ -61,6 +66,12 @@ jobs:
             c_compiler: cl
           - os: macos-latest
             c_compiler: cl
+          - os: ubuntu-latest
+            cmake_generator: "Visual Studio 17 2022"
+          - os: macos-latest
+            cmake_generator: "Visual Studio 17 2022"
+          - os: windows-latest
+            cmake_generator: "Unix Makefiles"
 
     steps:
     - name: Checkout repo
@@ -107,6 +118,7 @@ jobs:
 
     - name: Configure CMake
       id: configure
+      if: false
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required
       # if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
@@ -120,6 +132,7 @@ jobs:
 
     - name: Build
       id: build
+      if: false
       # Build your program with the given configuration. Note that --config is needed because
       # the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{env.BUILD_DIR}} --config ${{matrix.build_type}}
@@ -127,12 +140,20 @@ jobs:
 
     - name: Test
       id: test
+      if: false
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because
       # the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       working-directory: ${{env.BUILD_DIR}}
       run: |
         ctest --output-on-failure --build-config ${{matrix.build_type}}
+
+
+    - name: CTest Dashboard Client (Continuous)
+      id: ctest-dashboard
+      working-directory: ${{github.workspace}}
+      run: |
+        ctest -V -S CI-CD.cmake -C ${{matrix.build_type}} --output-on-failure -DCTEST_SOURCE_DIRECTORY=${{github.workspace}} -DCTEST_CMAKE_GENERATOR=${{matrix.cmake_generator}} -DCMAKE_C_COMPILER=${{matrix.c_compiler}}
 
 
     - name: Pack

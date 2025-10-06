@@ -153,7 +153,7 @@ jobs:
       id: ctest-dashboard
       working-directory: ${{github.workspace}}
       run: |
-        ctest -V -S CI-CD.cmake -C ${{matrix.build_type}} --output-on-failure -DCTEST_SOURCE_DIRECTORY=${{github.workspace}} -DCTEST_CMAKE_GENERATOR=${{matrix.cmake_generator}} -DCMAKE_C_COMPILER=${{matrix.c_compiler}}
+        ctest -V -S CI-CD.cmake -C "${{matrix.build_type}}" --output-on-failure -DCTEST_SOURCE_DIRECTORY="${{github.workspace}}" -DCTEST_CMAKE_GENERATOR="${{matrix.cmake_generator}}" -DCMAKE_C_COMPILER="${{matrix.c_compiler}}"
 
 
     - name: Pack

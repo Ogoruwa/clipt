@@ -43,5 +43,5 @@ ctest_memcheck()
 
 
 ctest_submit(
-    HTTPHEADER "Authorization: Beare $ENV{CDASH_AUTH_TOKEN}"
+    HTTPHEADER "Authorization: Bearer $ENV{CDASH_AUTH_TOKEN}"
 )

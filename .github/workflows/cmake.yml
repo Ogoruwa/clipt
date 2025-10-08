@@ -31,8 +31,8 @@ jobs:
       BUILD_DIR: ${{github.workspace}}/build
       IS_MAIN_BRANCH: ${{ (github.event_name == 'push' && github.head_ref == 'main') ||  github.ref_name == 'main'  }}
 
-      ARTIFACT_NAME: CLipt-${{matrix.os}}-${{matrix.c_compiler}}-${{matrix.build_type}}
-      CDASH_ARTIFACT_NAME: CLipt-${{matrix.os}}-${{matrix.c_compiler}}-${{matrix.build_type}}
+      BUILD_ARTIFACT_NAME: CLipt-${{matrix.os}}-${{matrix.c_compiler}}-${{matrix.build_type}}
+      CDASH_ARTIFACT_NAME: CDash-${{matrix.os}}-${{matrix.c_compiler}}-${{matrix.build_type}}
 
       REPL_EXECUTABLE: ${{github.workspace}}/build/bin/${{matrix.build_type}}/cliptr
       TEST_EXECUTABLE: ${{github.workspace}}/build/bin/${{matrix.build_type}}/test_suite
@@ -185,7 +185,7 @@ jobs:
       if: ${{ always() && steps.pack.outcome == 'success' }}
       uses: actions/upload-artifact@v4
       with:
-        name: ${{env.ARTIFACT_NAME}}
+        name: ${{env.BUILD_ARTIFACT_NAME}}
         path: ${{env.BUILD_DIR}}/Packaging/*.*
         retention-days: 7
         if-no-files-found: error

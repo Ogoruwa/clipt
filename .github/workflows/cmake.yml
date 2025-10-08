@@ -171,7 +171,7 @@ jobs:
         echo ""
         echo ""
         echo "==== Compile Test ===="
-        ${{matrix.c_compiler}} -v -E ../src/language/utils.c
+        ${{matrix.c_compiler}} ${{runner.os == 'Windows' && '/verbose' || '-v'}} -E ../src/language/utils.c
         echo "======================"
 
 

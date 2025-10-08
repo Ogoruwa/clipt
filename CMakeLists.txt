@@ -44,13 +44,6 @@ if(ENABLE_CLANG_TIDY)
 endif()
 
 
-# Hack: Add quotes to compiler path on Windows to handle spaces in path
-if (MSVC)
-    set(CMAKE_C_COMPILER "\"${CMAKE_C_COMPILER}\"")
-    message(NOTICE "CMAKE_C_COMPILER set to ${CMAKE_C_COMPILER}")
-endif()
-
-
 # Generate CTest script and exit
 # Generating the script this way to make use of CMake variables and avoid duplicate configuration
 # And to log all the steps in the CDash upload

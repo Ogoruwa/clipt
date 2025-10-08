@@ -55,6 +55,8 @@ if (CTEST_UPDATE OR (CDASH_MODEL STREQUAL "Nightly"))
     ctest_update()
 endif()
 
+message(NOTICE @CMAKE_ARGS@)
+message(NOTICE "STRING: @CMAKE_ARGS@")
 
 list(APPEND configure_options
     @CMAKE_ARGS@;
@@ -62,7 +64,7 @@ list(APPEND configure_options
     -DGENERATE_CTEST_SCRIPT=OFF
 )
 ctest_configure(OPTIONS "${configure_options}")
-
+return()
 
 ctest_build()
 

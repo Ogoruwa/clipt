@@ -55,14 +55,9 @@ if (CTEST_UPDATE OR (CDASH_MODEL STREQUAL "Nightly"))
     ctest_update()
 endif()
 
+
 set(CMAKE_ARGS "@CMAKE_ARGS@")
 string(REPLACE " " "\\\ " CMAKE_ARGS "${CMAKE_ARGS}")
-
-message("\n")
-message(NOTICE "CMAKE_ARGS: ${CMAKE_ARGS}")
-message(NOTICE ${CMAKE_ARGS})
-message("\n")
-
 list(APPEND configure_options
     ${CMAKE_ARGS};
     # Disable script generation explicitly
@@ -70,8 +65,8 @@ list(APPEND configure_options
 )
 ctest_configure(OPTIONS "${configure_options}")
 
-ctest_build()
 
+ctest_build()
 
 
 if (DEFINED CTEST_MEMORYCHECK_COMMAND OR DEFINED CTEST_MEMORYCHECK_TYPE)

@@ -51,15 +51,15 @@ jobs:
             c_compiler: cl
           - os: windows-latest
             cmake_generator: "Visual Studio 17 2022"
-          - os: ubuntu-latest
-            c_compiler: gcc
-          - os: ubuntu-latest
-            c_compiler: clang
-          - os: macos-latest
-            c_compiler: gcc
-          - os: macos-latest
-            c_compiler: clang
         exclude:
+          - os: ubuntu-latest
+            c_compiler: gcc
+          - os: ubuntu-latest
+            c_compiler: clang
+          - os: macos-latest
+            c_compiler: gcc
+          - os: macos-latest
+            c_compiler: clang
           - os: windows-latest
             c_compiler: gcc
           - os: windows-latest

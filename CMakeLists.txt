@@ -44,6 +44,11 @@ if(ENABLE_CLANG_TIDY)
 endif()
 
 
+# Hack: Add quotes to compiler path on Windows to handle spaces in path
+if (MSVC)
+    set(CMAKE_C_COMPILER "\"${CMAKE_C_COMPILER}\"")
+endif()
+
 
 # Generate CTest script and exit
 # Generating the script this way to make use of CMake variables and avoid duplicate configuration
@@ -64,12 +69,6 @@ if (GENERATE_CTEST_SCRIPT)
     configure_file("src/CTestScript.cmake" "${MY_CTEST_SCRIPT_PATH}" @ONLY)
 
     message("Done")
-
-    if (MSVC)
-        # Hack: CMake Error: CTEST_USE_LAUNCHERS is enabled, but the RULE_LAUNCH_COMPILE global property is not defined.
-        include(CTestUseLaunchers)
-    endif()
-
     return()
 endif()
 

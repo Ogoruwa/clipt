@@ -70,6 +70,11 @@ if (GENERATE_CTEST_SCRIPT)
     configure_file("src/CTestScript.cmake" "${MY_CTEST_SCRIPT_PATH}" @ONLY)
 
     message("Done")
+
+    if(MSVC)
+        include(CTestUseLaunchers)
+    endif()
+
     return()
 endif()
 

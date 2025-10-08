@@ -55,11 +55,16 @@ if (CTEST_UPDATE OR (CDASH_MODEL STREQUAL "Nightly"))
     ctest_update()
 endif()
 
-message(NOTICE @CMAKE_ARGS@)
-message(NOTICE "STRING: @CMAKE_ARGS@")
+set(CMAKE_ARGS "@CMAKE_ARGS@")
+string(REPLACE " " "\\\ " CMAKE_ARGS "${CMAKE_ARGS}")
+
+message("\n")
+message(NOTICE "CMAKE_ARGS: ${CMAKE_ARGS}")
+message(NOTICE ${CMAKE_ARGS})
+message("\n")
 
 list(APPEND configure_options
-    @CMAKE_ARGS@;
+    ${CMAKE_ARGS};
     # Disable script generation explicitly
     -DGENERATE_CTEST_SCRIPT=OFF
 )

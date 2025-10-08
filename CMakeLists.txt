@@ -50,13 +50,20 @@ endif()
 # And to log all the steps in the CDash upload
 if (GENERATE_CTEST_SCRIPT)
     set(MY_CTEST_SCRIPT_PATH "${CMAKE_BINARY_DIR}/CTestScript.cmake")
-    message(NOTICE "Generating CTest script and exiting")
+    message(NOTICE "Generating CTest script")
 
     include(src/MemoryCheck.cmake)
+
+    message(NOTICE "Including ctest")
     include(CTest)
+
+    message(NOTICE "Parsing command line variables")
     include(src/GetCommandLineVariables.cmake)
 
+    message(NOTICE "Configuring script")
     configure_file("src/CTestScript.cmake" "${MY_CTEST_SCRIPT_PATH}" @ONLY)
+
+    message("Done")
     return()
 endif()
 

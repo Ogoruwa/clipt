@@ -124,7 +124,7 @@ jobs:
       # if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: >
-        cmake -V -S ${{github.workspace}} -B ${{env.BUILD_DIR}}
+        cmake -S ${{github.workspace}} -B ${{env.BUILD_DIR}}
         -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
         -DCMAKE_C_COMPILER=${{matrix.c_compiler}}
         -DENABLE_CLANG_TIDY=ON -DCLANG_TIDY_WARNINGS_AS_ERRORS=${{((env.IS_MAIN_BRANCH == 'true') && 'ON') || 'OFF'}}
@@ -150,20 +150,17 @@ jobs:
       if: ${{ always() && (steps.configure.outcome == 'failure' || steps.pack.outcome == 'failure' || steps.ctest-dashboard.outcome == 'failure') }}
       working-directory: ${{env.BUILD_DIR}}
       run: |
-        echo ""
-        echo "==== Path ===="
-        echo "${{runner.os == 'Windows' && '$env:PATH' || '$PATH'}}"
-        echo "=============="
-        echo ""
-        echo ""
         echo "===== Env ====="
-        echo "${{runner.os == 'Windows' && '$env' || '$(env)'}}"
+        echo "${{runner.os == 'Windows' && '$Get-ChildItem Env:' || '$(env)'}}"
         echo "================"
         echo ""
         echo ""
         echo "===== Build Directory ====="
-        ls && mkdir -p bin lib Testing Packaging
-        ls .
+        mkdir -p bin
+        mkdir -p lib
+        mkdir -p Testing
+        mkdir -p Packaging
+        ls
         ls -R "bin"
         ls -R "lib"
         ls -R "Testing"
@@ -177,7 +174,7 @@ jobs:
         echo ""
         echo ""
         echo "==== Compile Test ===="
-        ${{matrix.c_compiler}} -v -E ../src/language/utils.c -I../include
+        ${{matrix.c_compiler}} -v -E ../src/language/utils.c
         echo "======================"
 
 

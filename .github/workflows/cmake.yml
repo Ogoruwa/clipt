@@ -27,7 +27,7 @@ jobs:
     runs-on: ${{matrix.os}}
 
     env:
-      CDASH_AUTH_TOKEN: ${{ secrets.CDASH_AUTH_TOKEN }}
+      CDASH_TOKEN: ${{ secrets.CDASH_TOKEN }}
       BUILD_DIR: ${{github.workspace}}/build
       IS_MAIN_BRANCH: ${{ (github.event_name == 'push' && github.head_ref == 'main') ||  github.ref_name == 'main'  }}
 
@@ -197,6 +197,6 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{env.CDASH_ARTIFACT_NAME}}
-        path: ${{env.BUILD_DIR}}/Testing/*.xml
+        path: ${{env.BUILD_DIR}}/Testing/*/*.xml
         retention-days: 7
         if-no-files-found: error

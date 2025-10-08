@@ -120,7 +120,6 @@ jobs:
 
     - name: Configure CMake
       id: configure
-      if: false
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required
       # if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
@@ -163,12 +162,19 @@ jobs:
         echo ""
         echo ""
         echo "===== Build Directory ====="
-        ls && mkdir -p Testing Packaging
+        ls && mkdir -p bin lib Testing Packaging
+        ls .
         ls -R "bin"
         ls -R "lib"
         ls -R "Testing"
         ls -R "Packaging"
         echo "==========================="
+        echo ""
+        echo ""
+        echo "==== CMake Cache ===="
+        cat "CMakeCache.txt" || 1
+        echo "====================="
+        echo ""
         echo ""
         echo "==== Compile Test ===="
         ${{matrix.c_compiler}} -v -E ../src/language/utils.c -I../include

@@ -156,7 +156,7 @@ jobs:
         echo ""
         echo ""
         echo "===== Build Directory ====="
-        ${{runner.os == 'Windows' && 'New-Item -ItemType Directory -Force -Path bin -Path lib -Path Testing -Path Packaging' || 'mkdir -p bin lib Testing Packaging' }}
+        ${{runner.os == 'Windows' && 'New-Item -ItemType Directory -Force -Path bin,lib,Testing,Packaging' || 'mkdir -p bin lib Testing Packaging' }}
         ls
         ls -R "bin"
         ls -R "lib"

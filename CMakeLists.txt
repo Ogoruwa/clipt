@@ -46,7 +46,7 @@ endif()
 
 # Hack: Add quotes to compiler path on Windows to handle spaces in path
 if (MSVC)
-    set(CMAKE_C_COMPILER "\\\"${CMAKE_C_COMPILER}\\\"")
+    set(CMAKE_C_COMPILER "\"${CMAKE_C_COMPILER}\"")
     message(NOTICE "CMAKE_C_COMPILER set to ${CMAKE_C_COMPILER}")
 endif()
 

@@ -129,14 +129,7 @@ jobs:
         -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
         -DCMAKE_C_COMPILER=${{matrix.c_compiler}}
         -DENABLE_CLANG_TIDY=ON -DCLANG_TIDY_WARNINGS_AS_ERRORS=${{((env.IS_MAIN_BRANCH == 'true') && 'ON') || 'OFF'}}
-        -DENABLE_ASAN=ON
-
-
-    - name: Install Valgrind (Linux) or DrMemory (Windows)
-      uses: ConorMacBride/install-package@v1
-      with:
-        apt: valgrind
-        choco: drmemory
+        -DENABLE_ASAN=ON -DGENERATE_CTEST_SCRIPT=ON
 
 
     - name: CTest Dashboard Client (Continuous)

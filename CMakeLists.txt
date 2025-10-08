@@ -64,6 +64,13 @@ if (GENERATE_CTEST_SCRIPT)
     configure_file("src/CTestScript.cmake" "${MY_CTEST_SCRIPT_PATH}" @ONLY)
 
     message("Done")
+
+    if (MSVC)
+        # Hack: CMake Error: CTEST_USE_LAUNCHERS is enabled, but the RULE_LAUNCH_COMPILE global property is not defined.
+        message(WARNING "Disabling CTEST_USE_LAUNCHERS for MSVC as a hack")
+        set(CTEST_USE_LAUNCHERS FALSE)
+    endif()
+
     return()
 endif()
 

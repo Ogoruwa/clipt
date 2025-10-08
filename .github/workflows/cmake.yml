@@ -166,12 +166,12 @@ jobs:
         echo ""
         echo ""
         echo "==== CMake Cache ===="
-        cat "CMakeCache.txt" || true
+        cat "CTestScript.cmake" || true
         echo "====================="
         echo ""
         echo ""
         echo "==== Compile Test ===="
-        ${{matrix.c_compiler}} ${{runner.os == 'Windows' && '/verbose' || '-v'}} -E ../src/language/utils.c
+        ${{matrix.c_compiler}} ${{runner.os == 'Windows' && '/VERBOSE' || '-v'}} -E ../src/language/utils.c
         echo "======================"
 
 

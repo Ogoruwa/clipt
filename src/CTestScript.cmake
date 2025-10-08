@@ -64,7 +64,6 @@ list(APPEND configure_options
     -DGENERATE_CTEST_SCRIPT=OFF
 )
 ctest_configure(OPTIONS "${configure_options}")
-return()
 
 ctest_build()
 

@@ -124,7 +124,7 @@ jobs:
       # if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: >
-        cmake -S ${{github.workspace}} -B ${{env.BUILD_DIR}}
+        cmake -V -S ${{github.workspace}} -B ${{env.BUILD_DIR}}
         -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
         -DCMAKE_C_COMPILER=${{matrix.c_compiler}}
         -DENABLE_CLANG_TIDY=ON -DCLANG_TIDY_WARNINGS_AS_ERRORS=${{((env.IS_MAIN_BRANCH == 'true') && 'ON') || 'OFF'}}
@@ -147,7 +147,7 @@ jobs:
 
     - name: Debug Job
       # If the ctest dashboard workflow failed, print relevant information to help debugging.
-      if: ${{ always() && (steps.pack.outcome == 'failure' || steps.ctest-dashboard.outcome == 'failure') }}
+      if: ${{ always() && (steps.configure.outcome == 'failure' || steps.pack.outcome == 'failure' || steps.ctest-dashboard.outcome == 'failure') }}
       working-directory: ${{env.BUILD_DIR}}
       run: |
         echo ""
@@ -172,12 +172,13 @@ jobs:
         echo ""
         echo ""
         echo "==== CMake Cache ===="
-        cat "CMakeCache.txt" || 1
+        cat "CMakeCache.txt" || true
         echo "====================="
         echo ""
         echo ""
         echo "==== Compile Test ===="
         ${{matrix.c_compiler}} -v -E ../src/language/utils.c -I../include
+        echo "======================"
 
 
     - name: Upload build artifacts

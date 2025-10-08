@@ -18,6 +18,7 @@ foreach(CACHE_VAR ${CACHE_VARS})
             set(CACHE_VAR_TYPE :${CACHE_VAR_TYPE})
         endif()
 
+        # #
         if(${${CACHE_VAR}} STREQUAL "")
             set(CACHE_VAR_VALUE "\"\"")
         else()
@@ -25,8 +26,10 @@ foreach(CACHE_VAR ${CACHE_VARS})
         endif()
 
         if(CACHE_VAR_TYPE STREQUAL ":FILEPATH")
-            set(CACHE_VAR_VALUE "\\\'${CACHE_VAR_VALUE}\\\'")
+            string(REPLACE " " "\\\ " CACHE_VAR_VALUE "${CACHE_VAR_VALUE}")
+            set(CACHE_VAR_VALUE "\'${CACHE_VAR_VALUE}\'")
         endif()
+        # #
 
         list(APPEND CMAKE_ARGS "-D${CACHE_VAR}${CACHE_VAR_TYPE}=${CACHE_VAR_VALUE}")
     endif()

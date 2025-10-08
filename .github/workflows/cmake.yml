@@ -156,7 +156,7 @@ jobs:
         echo ""
         echo ""
         echo "===== Build Directory ====="
-        ${{ runner.os == 'Windows' && 'mkdir bin lib Testing Packaging' || 'mkdir -p bin lib Testing Packaging' }}
+        ${{ runner.os == 'Windows' && 'md bin lib Testing Packaging' || 'mkdir -p bin lib Testing Packaging' }}
         ls
         ls -R "bin"
         ls -R "lib"

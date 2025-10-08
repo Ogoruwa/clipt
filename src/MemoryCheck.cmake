@@ -3,8 +3,13 @@
 if (ENABLE_ASAN)
     set(MEMORYCHECK_TYPE AddressSanitizer)
 
+    set(MEMORYCHECK_COMMAND "")
+
+    set(MEMORYCHECK_SANITIZER_OPTIONS "verbosity=1:symbolize=1:abort_on_error=0:detect_leaks=1")
+
 
 elseif (WIN32)
+    # TODO: Support Dr. Memory on Windows properly
     set(MEMORYCHECK_TYPE DrMemory)
 
     find_program(MEMORYCHECK_COMMAND drmemory)
@@ -13,6 +18,7 @@ elseif (WIN32)
 
 
 elseif (APPLE)
+    # TODO: Support leaks on macOS properly
     set(MEMORYCHECK_TYPE leaks)
 
     find_program(MEMORYCHECK_COMMAND leaks)
@@ -29,8 +35,3 @@ else()
     set(MEMORYCHECK_COMMAND_OPTIONS "--leak-check=full --show-leak-kinds=all --track-origins=yes --")
 
 endif()
-
-
-set(CTEST_MEMORYCHECK_TYPE ${MEMORYCHECK_TYPE})
-set(CTEST_MEMORYCHECK_COMMAND ${MEMORYCHECK_COMMAND})
-set(CTEST_MEMORYCHECK_COMMAND_OPTIONS ${MEMORYCHECK_COMMAND_OPTIONS})

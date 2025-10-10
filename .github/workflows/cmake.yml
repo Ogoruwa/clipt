@@ -151,7 +151,7 @@ jobs:
       working-directory: ${{env.BUILD_DIR}}
       run: |
         echo "===== Env ====="
-        echo "${{runner.os == 'Windows' && '$Get-ChildItem Env:' || '$(env)'}}"
+        echo "${{runner.os == 'Windows' && 'Get-ChildItem Env:' || '$(env)'}}"
         echo "================"
         echo ""
         echo ""

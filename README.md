@@ -101,7 +101,7 @@ Follow the steps below to generate a ctest script for cmake workflows and cdash 
         ctest -S build/CTestScript.cmake -DCDASH_MODEL=<YOUR_DASHBOARD_MODEL>
     ```
 
-    Where <YOUR_DASHBOARD_MODEL> is either Continuous (for CI-CD), Experimental (for debugging), Nigtly (for daily builds)
+    Where <YOUR_DASHBOARD_MODEL> is either Continuous (for CI-CD), Experimental (for debugging), Nightly (for daily builds)
 
 ### Environment Variables
 

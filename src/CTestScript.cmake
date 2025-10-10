@@ -30,13 +30,11 @@ set(MY_CTEST_SCRIPT_PATH @MY_CTEST_SCRIPT_PATH@)
 set(MY_CTEST_SCRIPT_PATH_2 "${CTEST_SOURCE_DIRECTORY}/CTestScript.cmake")
 
 
-# Checks
 
-message(STATUS "CDASH_MODEL is set to: ${CDASH_MODEL}")
+# Checks
 if (NOT("${CDASH_MODEL}" MATCHES "^(Experimental|Nightly|Continuous)$"))
     message(FATAL_ERROR "CDASH_MODEL must be set and be one of Experimental, Nightly or Continuous")
 endif()
-
 
 
 

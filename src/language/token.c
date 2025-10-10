@@ -195,6 +195,14 @@ void initialize_keyword_hashmap(struct hashmap* map) {
 };
 
 
+static void free_keyword_hashmap() {
+    if (keywords_hashmap != NULL) {
+        hashmap_free(keywords_hashmap);
+        keywords_hashmap = NULL;
+    };
+};
+
+
 struct hashmap* get_keyword_hashmap() {
     if (keywords_hashmap == NULL) {
         struct hashmap* temp =
@@ -208,12 +216,4 @@ struct hashmap* get_keyword_hashmap() {
     };
 
     return keywords_hashmap;
-};
-
-
-static void free_keyword_hashmap() {
-    if (keywords_hashmap != NULL) {
-        hashmap_free(keywords_hashmap);
-        keywords_hashmap = NULL;
-    };
 };

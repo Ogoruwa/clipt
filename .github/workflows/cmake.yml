@@ -46,24 +46,8 @@ jobs:
         build_type: [Debug]
         c_compiler: [gcc, clang, cl]
         cmake_generator: ["Unix Makefiles", "Visual Studio 17 2022"]
-        include:
-          - os: windows-latest
-            c_compiler: cl
-          - os: windows-latest
-            cmake_generator: "Visual Studio 17 2022"
+
         exclude:
-          - os: ubuntu-latest
-            c_compiler: gcc
-          - os: ubuntu-latest
-            c_compiler: clang
-          - os: macos-latest
-            c_compiler: gcc
-          - os: macos-latest
-            c_compiler: clang
-          - os: windows-latest
-            c_compiler: gcc
-          - os: windows-latest
-            c_compiler: clang
           - os: ubuntu-latest
             c_compiler: cl
           - os: macos-latest
@@ -74,6 +58,10 @@ jobs:
             cmake_generator: "Visual Studio 17 2022"
           - os: windows-latest
             cmake_generator: "Unix Makefiles"
+          - os: windows-latest
+            c_compiler: gcc
+          - os: windows-latest
+            c_compiler: clang
 
     steps:
     - name: Checkout repo
@@ -83,8 +71,7 @@ jobs:
     - name: Setup
       # Turn repeated input strings (such as the build output directory) into step outputs.
       # These step outputs can be used throughout the workflow file.
-      id: strings
-      shell: bash
+      id: setup
       run: |
         mkdir -p "${{github.workspace}}/build/logs"
 
@@ -151,28 +138,27 @@ jobs:
       working-directory: ${{env.BUILD_DIR}}
       run: |
         echo "===== Env ====="
-        echo "${{runner.os == 'Windows' && 'Get-ChildItem Env:' || '$(env)'}}"
+        echo "${{runner.os == 'Windows' && 'Get-ChildItem Env:' || 'env'}}"
         echo "================"
         echo ""
         echo ""
         echo "===== Build Directory ====="
-        ${{runner.os == 'Windows' && 'New-Item -ItemType Directory -Force -Path bin,lib,Testing,Packaging' || 'mkdir -p bin lib Testing Packaging' }}
         ls
-        ls -R "bin"
-        ls -R "lib"
-        ls -R "Testing"
-        ls -R "Packaging"
+        ls -R "bin" || true
+        ls -R "lib" || true
+        ls -R "Testing" || true
+        ls -R "Packaging" || true
         echo "==========================="
         echo ""
         echo ""
-        echo "==== CMake Cache ===="
-        cat "CTestScript.cmake" || true
-        echo "====================="
-        echo ""
-        echo ""
-        echo "==== Compile Test ===="
-        ${{matrix.c_compiler}} ${{runner.os == 'Windows' && '/VERBOSE' || '-v'}} -E ../src/language/utils.c
-        echo "======================"
+        # echo "==== CMake Cache ===="
+        # cat "CTestScript.cmake" || true
+        # echo "====================="
+        # echo ""
+        # echo ""
+        # echo "==== Compile Test ===="
+        # ${{matrix.c_compiler}} ${{runner.os == 'Windows' && '/VERBOSE' || '-v'}} -E ../src/language/utils.c
+        # echo "======================"
 
 
     - name: Upload build artifacts

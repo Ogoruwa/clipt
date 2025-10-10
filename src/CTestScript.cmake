@@ -33,10 +33,11 @@ set(MY_CTEST_SCRIPT_PATH_2 "${CTEST_SOURCE_DIRECTORY}/CTestScript.cmake")
 
 
 # Checks
-if (NOT("${CDASH_MODEL}" MATCHES "^(Experimental|Nightly|Continuous)$"))
-    message(FATAL_ERROR "CDASH_MODEL must be set and be one of Experimental, Nightly or Continuous")
+if (NOT DEFINED CDASH_MODEL)
+    message(FATAL_ERROR "CDASH_MODEL variable is not set. Please set CDASH_MODEL to one of: Experimental, Nightly, or Continuous.")
+elseif (NOT("${CDASH_MODEL}" MATCHES "^(Experimental|Nightly|Continuous)$"))
+    message(FATAL_ERROR "CDASH_MODEL must be one of: Experimental, Nightly, or Continuous. Current value: '${CDASH_MODEL}'")
 endif()
-
 
 
 # Cmake workflow

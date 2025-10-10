@@ -27,9 +27,13 @@ jobs:
     runs-on: ${{matrix.os}}
 
     env:
-      IS_MAIN_BRANCH: ${{ (github.event_name == 'push' && github.head_ref == 'main') ||  github.ref_name == 'main'  }}
+      CDASH_TOKEN: ${{ secrets.CDASH_TOKEN }}
       BUILD_DIR: ${{github.workspace}}/build
-      ARTIFACT_NAME: CLipt-${{matrix.os}}-${{matrix.c_compiler}}-${{matrix.build_type}}
+      IS_MAIN_BRANCH: ${{ (github.event_name == 'push' && github.head_ref == 'main') ||  github.ref_name == 'main'  }}
+
+      BUILD_ARTIFACT_NAME: CLipt-${{matrix.os}}-${{matrix.c_compiler}}-${{matrix.build_type}}
+      CDASH_ARTIFACT_NAME: CDash-${{matrix.os}}-${{matrix.c_compiler}}-${{matrix.build_type}}
+
       REPL_EXECUTABLE: ${{github.workspace}}/build/bin/${{matrix.build_type}}/cliptr
       TEST_EXECUTABLE: ${{github.workspace}}/build/bin/${{matrix.build_type}}/test_suite
 
@@ -41,26 +45,23 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         build_type: [Debug]
         c_compiler: [gcc, clang, cl]
-        include:
-          - os: windows-latest
-            c_compiler: cl
-          - os: ubuntu-latest
-            c_compiler: gcc
-          - os: ubuntu-latest
-            c_compiler: clang
-          - os: macos-latest
-            c_compiler: gcc
-          - os: macos-latest
-            c_compiler: clang
+        cmake_generator: ["Unix Makefiles", "Visual Studio 17 2022"]
+
         exclude:
-          - os: windows-latest
-            c_compiler: gcc
-          - os: windows-latest
-            c_compiler: clang
           - os: ubuntu-latest
             c_compiler: cl
           - os: macos-latest
             c_compiler: cl
+          - os: ubuntu-latest
+            cmake_generator: "Visual Studio 17 2022"
+          - os: macos-latest
+            cmake_generator: "Visual Studio 17 2022"
+          - os: windows-latest
+            cmake_generator: "Unix Makefiles"
+          - os: windows-latest
+            c_compiler: gcc
+          - os: windows-latest
+            c_compiler: clang
 
     steps:
     - name: Checkout repo
@@ -70,8 +71,7 @@ jobs:
     - name: Setup
       # Turn repeated input strings (such as the build output directory) into step outputs.
       # These step outputs can be used throughout the workflow file.
-      id: strings
-      shell: bash
+      id: setup
       run: |
         mkdir -p "${{github.workspace}}/build/logs"
 
@@ -115,24 +115,14 @@ jobs:
         -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
         -DCMAKE_C_COMPILER=${{matrix.c_compiler}}
         -DENABLE_CLANG_TIDY=ON -DCLANG_TIDY_WARNINGS_AS_ERRORS=${{((env.IS_MAIN_BRANCH == 'true') && 'ON') || 'OFF'}}
-        -DENABLE_ASAN=ON
+        -DENABLE_ASAN=ON -DGENERATE_CTEST_SCRIPT=ON
 
 
-    - name: Build
-      id: build
-      # Build your program with the given configuration. Note that --config is needed because
-      # the default Windows generator is a multi-config generator (Visual Studio generator).
-      run: cmake --build ${{env.BUILD_DIR}} --config ${{matrix.build_type}}
-
-
-    - name: Test
-      id: test
-      # Execute tests defined by the CMake configuration. Note that --build-config is needed because
-      # the default Windows generator is a multi-config generator (Visual Studio generator).
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      working-directory: ${{env.BUILD_DIR}}
+    - name: CTest Dashboard Client (Continuous)
+      id: ctest-dashboard
+      working-directory: ${{github.workspace}}
       run: |
-        ctest --output-on-failure --build-config ${{matrix.build_type}}
+        ctest -VV -S build/CTestScript.cmake --output-on-failure -DCDASH_MODEL=Continuous
 
 
     - name: Pack
@@ -143,31 +133,32 @@ jobs:
 
 
     - name: Debug Job
-      # If the build or tests failed, print relevant information to help debugging.
-      if: ${{ always() && (steps.pack.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure') }}
+      # If the ctest dashboard workflow failed, print relevant information to help debugging.
+      if: ${{ always() && (steps.configure.outcome == 'failure' || steps.pack.outcome == 'failure' || steps.ctest-dashboard.outcome == 'failure') }}
       working-directory: ${{env.BUILD_DIR}}
       run: |
-        echo ""
-        echo "==== Path ===="
-        echo "${{runner.os == 'Windows' && '$env:PATH' || '$PATH'}}"
-        echo "=============="
-        echo ""
-        echo ""
         echo "===== Env ====="
-        echo "${{runner.os == 'Windows' && '$env' || '$(env)'}}"
+        echo "${{runner.os == 'Windows' && 'Get-ChildItem Env:' || 'env'}}"
         echo "================"
         echo ""
         echo ""
         echo "===== Build Directory ====="
-        ls && mkdir -p Testing Packaging
-        ls -R "bin"
-        ls -R "lib"
-        ls -R "Testing"
-        ls -R "Packaging"
+        ls
+        ls -R "bin" || true
+        ls -R "lib" || true
+        ls -R "Testing" || true
+        ls -R "Packaging" || true
         echo "==========================="
         echo ""
-        echo "==== Compile Test ===="
-        ${{matrix.c_compiler}} -v -E ../src/language/utils.c -I../include
+        echo ""
+        # echo "==== CMake Cache ===="
+        # cat "CTestScript.cmake" || true
+        # echo "====================="
+        # echo ""
+        # echo ""
+        # echo "==== Compile Test ===="
+        # ${{matrix.c_compiler}} ${{runner.os == 'Windows' && '/VERBOSE' || '-v'}} -E ../src/language/utils.c
+        # echo "======================"
 
 
     - name: Upload build artifacts
@@ -175,36 +166,18 @@ jobs:
       if: ${{ always() && steps.pack.outcome == 'success' }}
       uses: actions/upload-artifact@v4
       with:
-        name: ${{env.ARTIFACT_NAME}}
+        name: ${{env.BUILD_ARTIFACT_NAME}}
         path: ${{env.BUILD_DIR}}/Packaging/*.*
         retention-days: 7
         if-no-files-found: error
 
 
-    # Run memory leak tests
-    - name: Install Valgrind (Linux) or DrMemory (Windows)
-      uses: ConorMacBride/install-package@v1
+    - name: Upload cdash artifacts
+      # Upload cdash files
+      if: ${{ always() && steps.ctest-dashboard.outcome == 'success' }}
+      uses: actions/upload-artifact@v4
       with:
-        apt: valgrind
-        # choco: drmemory
-
-    - name: Run memory leak tests (Linux)
-      working-directory: ${{env.BUILD_DIR}}
-      if: runner.os == 'Linux'
-      run: |
-        valgrind --leak-check=full --show-leak-kinds=all -s ctest --build-config ${{matrix.build_type}}
-
-    - name: Run memory leak tests (MacOS)
-      working-directory: ${{env.BUILD_DIR}}
-      if: runner.os == 'macOS'
-      run: |
-        MallocStackLogging=1 leaks -atExit -- ctest --build-config ${{matrix.build_type}}
-
-    - name: Run memory leak tests (Windows)
-      working-directory: ${{env.BUILD_DIR}}
-      if: runner.os == 'Windows' && false
-      #drmemory -batch -leaks_only -logdir ${{env.BUILD_DIR}}/logs -- ctest --build-config ${{matrix.build_type}}
-      run: |
-        drmemory -verbose 2 -leaks_only -no_count_leaks -no_track_allocs -logdir ${{env.BUILD_DIR}}/logs/DrMemory -- ctest --build-config ${{matrix.build_type}}
-        echo "\n\nDrMemory Logs: \n"
-        cat ${{env.BUILD_DIR}}/logs/DrMemory/DrMemory-*
+        name: ${{env.CDASH_ARTIFACT_NAME}}
+        path: ${{env.BUILD_DIR}}/Testing/*/*.xml
+        retention-days: 7
+        if-no-files-found: error

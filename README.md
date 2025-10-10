@@ -15,6 +15,8 @@ The end goal is to create a functional, interpreted programming language.
 
 Based on the tutorial at [craftinginterpreters.com](https://craftinginterpreters.com).
 
+CDash link: https://my.cdash.org/index.php?project=Clipt
+
 ## Features
 
 - Token
@@ -35,7 +37,7 @@ Options can be enabled and disabled when configuring, using the `-D` flag
    cmake -DEXAMPLE=ON
 ```
 
-The avaiable options are listed below, in this format -> `OPTIONNAME` (`DEFAULT VALUE`)
+The avaiable options are listed below, in this format -> `OPTIONNAME` (`DEFAULT VALUE`): `DESCRIPTION`
 
 - `BUILD_INTERPRETER` (`ON`): Build the interpreter
 
@@ -83,3 +85,28 @@ The avaiable options are listed below, in this format -> `OPTIONNAME` (`DEFAULT 
 ```shell
     cpack
 ```
+
+
+## CTest Script Generation and Usage
+
+Follow the steps below to generate a ctest script for cmake workflows and cdash uploads
+
+- Change to the project's directory
+
+- Configure the project, with the `GENERATE_CTEST_SCRIPT` option enabled. This generates the script as `CTestScript.cmake` in the build directory.
+
+- You can then run the script
+
+    ```shell
+        ctest -S build/CTestScript.cmake -DCDASH_MODEL=<YOUR_DASHBOARD_MODEL>
+    ```
+
+    Where <YOUR_DASHBOARD_MODEL> is either Continuous (for CI-CD), Experimental (for debugging), Nightly (for daily builds)
+
+### Environment Variables
+
+- `CDASH_TOKEN`: The token to use for authentication
+
+### Configuration Options
+
+- `CTEST_UPDATE` (`OFF`): Whether to run the update step, in order words, retrieve the latest source code

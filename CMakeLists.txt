@@ -9,9 +9,10 @@ project(CLipt
 
 # Options
 option(BUILD_INTERPRETER "Build the interpreter" ON)
-option(CLANG_TIDY_WARNINGS_AS_ERRORS "Make cLang tidy warnings errors" OFF)
+option(CLANG_TIDY_WARNINGS_AS_ERRORS "Treat clang-tidy warnings as errors" OFF)
 option(ENABLE_ASAN "Enable address sanitizer" OFF)
-option(ENABLE_CLANG_TIDY "Enable cLang-tidy checks" OFF)
+option(ENABLE_CLANG_TIDY "Enable clang-tidy checks" OFF)
+option(GENERATE_CTEST_SCRIPT "Generate CTest script for CDash integration" OFF)
 
 
 # Variables
@@ -42,14 +43,38 @@ if(ENABLE_CLANG_TIDY)
 endif()
 
 
+# Put this here so it is included no matter what happens
+if("${CMAKE_GENERATOR}" MATCHES "Make|Ninja")
+    set(CTEST_USE_LAUNCHERS ON)
+endif()
+include(CTest)
+
+
+# Generate CTest script and exit
+# Generating the script this way to make use of CMake variables and avoid duplicate configuration
+# And to log all the steps in the CDash upload
+if (GENERATE_CTEST_SCRIPT)
+    set(MY_CTEST_SCRIPT_PATH "${CMAKE_BINARY_DIR}/CTestScript.cmake")
+    message(NOTICE "Generating CTest script")
+
+    include(src/MemoryCheck.cmake)
+    include(src/GetCommandLineVariables.cmake)
+
+    # Escape spaces in CMAKE_ARGS for proper passing to configure_file
+    string(REPLACE " " "\\\ " CMAKE_ARGS "${CMAKE_ARGS}")
+    configure_file("src/CTestScript.cmake" "${MY_CTEST_SCRIPT_PATH}" @ONLY)
+
+    return()
+endif()
+
+
+
 # Targets
 add_subdirectory("src")
 
 
 
 # Testing
-include(CTest)
-
 if(BUILD_TESTING)
     add_subdirectory("tests")
 endif()

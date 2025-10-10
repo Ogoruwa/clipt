@@ -28,8 +28,6 @@ elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
         endif()
     endif()
 
-    set(clean_clang_tidy() )
-
 
 
 elseif(CMAKE_C_COMPILER_ID STREQUAL "CLANG")

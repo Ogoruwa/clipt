@@ -7,9 +7,11 @@ if(BUILD_INTERPRETER)
 endif()
 
 
+include("MemoryCheck.cmake")
+
 include("CompilerOptions.cmake")
 
-include("ClangTidy.cmake")
+include("CleanCompileCommands.cmake")
 
 if (TARGET CleanCompileCommands)
     add_dependencies(Lang CleanCompileCommands)

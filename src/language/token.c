@@ -1,6 +1,9 @@
 #include "token.h"
 
 
+static struct hashmap* keywords_hashmap = NULL;
+
+
 const char* get_token_type_name(TokenType token_type) {
     const char* names[NO_OF_TOKENS] = {
         [LEFT_PAREN] = "LEFT_PAREN",
@@ -193,27 +196,24 @@ void initialize_keyword_hashmap(struct hashmap* map) {
 
 
 struct hashmap* get_keyword_hashmap() {
-    static struct hashmap* map = NULL;
-
-    if (map == NULL) {
+    if (keywords_hashmap == NULL) {
         struct hashmap* temp =
             hashmap_new(sizeof(KeywordHash), 0, 0, 0, keyword_hash, keyword_hash_compare, NULL, NULL);
 
-        map = temp;
+        keywords_hashmap = temp;
         temp = NULL;
 
-        initialize_keyword_hashmap(map);
+        initialize_keyword_hashmap(keywords_hashmap);
         atexit(free_keyword_hashmap);
     };
 
-    return map;
+    return keywords_hashmap;
 };
 
 
 static void free_keyword_hashmap() {
-    struct hashmap* map = get_keyword_hashmap();
-    if (map != NULL) {
-        hashmap_free(map);
-        map = NULL;
+    if (keywords_hashmap != NULL) {
+        hashmap_free(keywords_hashmap);
+        keywords_hashmap = NULL;
     };
 };

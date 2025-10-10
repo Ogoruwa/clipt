@@ -106,9 +106,9 @@ void print_token(Token* token);
 
 const char* get_token_type_name(TokenType token_type);
 
-struct hashmap* get_keyword_hashmap();
+void free_keyword_hashmap();
 
-static void free_keyword_hashmap();
+struct hashmap* get_keyword_hashmap();
 
 
 #endif

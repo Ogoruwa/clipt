@@ -203,7 +203,17 @@ struct hashmap* get_keyword_hashmap() {
         temp = NULL;
 
         initialize_keyword_hashmap(map);
+        atexit(free_keyword_hashmap);
     };
 
     return map;
+};
+
+
+static void free_keyword_hashmap() {
+    struct hashmap* map = get_keyword_hashmap();
+    if (map != NULL) {
+        hashmap_free(map);
+        map = NULL;
+    };
 };

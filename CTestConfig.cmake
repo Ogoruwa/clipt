@@ -17,6 +17,5 @@ else()
   set(CTEST_DROP_LOCATION "/submit.php?project=Clipt")
 endif()
 
-set(CTEST_USE_LAUNCHERS TRUE)
 set(CTEST_USE_INSTRUMENTATION TRUE)
 set(CTEST_DROP_SITE_CDASH TRUE)

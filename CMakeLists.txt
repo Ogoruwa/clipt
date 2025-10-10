@@ -16,7 +16,6 @@ option(GENERATE_CTEST_SCRIPT "Generate CTest script for CDash integration" OFF)
 
 
 # Variables
-set(CTEST_USE_LAUNCHERS TRUE)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -45,6 +44,9 @@ endif()
 
 
 # Put this here so it is included no matter what happens
+if("${CMAKE_GENERATOR}" MATCHES "Make|Ninja")
+    set(CTEST_USE_LAUNCHERS ON)
+endif()
 include(CTest)
 
 
@@ -58,7 +60,10 @@ if (GENERATE_CTEST_SCRIPT)
     include(src/MemoryCheck.cmake)
     include(src/GetCommandLineVariables.cmake)
 
+    # Escape spaces in CMAKE_ARGS for proper passing to configure_file
+    string(REPLACE " " "\\\ " CMAKE_ARGS "${CMAKE_ARGS}")
     configure_file("src/CTestScript.cmake" "${MY_CTEST_SCRIPT_PATH}" @ONLY)
+
     return()
 endif()
 
